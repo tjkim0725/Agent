@@ -221,11 +221,11 @@ async function build() {
     s.addNotes("과정 소개. 오늘은 Tosca Commander에 들어 있는 MCP Server를 써서, AI 어시스턴트에게 말로 요청해 테스트케이스를 만드는 방법을 배운다. 기준 버전은 Commander 2026.1 LTS Patch 1 이상이고, Tricentis가 공개한 commander-mcp 스킬팩 1.2.1 내용을 기준으로 했다. Tosca를 많이 안 써 본 분도 따라올 수 있게 용어부터 짚고 간다.");
   }
   {
-    const s = content("오늘 진행 순서", "전체 3시간 20분 중 절반 가까이가 실습이다. 이론은 실습에 필요한 만큼만 다룬다. Part 2 실습은 Lab 0부터 Lab 5까지 순서대로 진행하는데, 앞 Lab에서 만든 결과를 뒤 Lab에서 쓰기 때문에 건너뛰지 않는다. 휴식은 Part 2가 끝난 뒤 10분.", SEC.open);
+    const s = content("오늘 진행 순서", "전체 3시간 20분 중 절반 가까이가 실습이다. 이론은 실습에 필요한 만큼만 다룬다. Part 2 실습은 Lab 0부터 Lab 5까지 순서대로 진행하는데, 앞 Lab에서 만든 결과를 뒤 Lab에서 쓰기 때문에 건너뛰지 않는다. 휴식은 Lab 3가 끝난 뒤 10분. 그 전까지 95분이므로 집중이 떨어지지 않게 Lab 사이사이 진행 상황을 확인한다.", SEC.open);
     card(s, 0.6, 1.5, 3.6, 5.2, { fill: { color: C.background2 } });
     txt(s, "총 시간", { x: 0.95, y: 1.85, w: 3.0, h: 0.4, fontSize: 14, color: C.accent6 });
     txt(s, "3시간 20분", { x: 0.95, y: 2.25, w: 3.0, h: 0.8, fontSize: 36, bold: true, color: C.text2 });
-    txt(s, "휴식 10분 포함", { x: 0.95, y: 3.05, w: 3.0, h: 0.4, fontSize: 14, color: C.accent6 });
+    txt(s, "휴식 10분 포함 (Lab 3 뒤)", { x: 0.95, y: 3.05, w: 3.0, h: 0.4, fontSize: 14, color: C.accent6 });
     txt(s, "그중 실습", { x: 0.95, y: 4.15, w: 3.0, h: 0.4, fontSize: 14, color: C.accent6 });
     txt(s, "90분", { x: 0.95, y: 4.55, w: 3.0, h: 0.8, fontSize: 36, bold: true, color: C.text2 });
     txt(s, "1인 1PC, 개인 워크스페이스", { x: 0.95, y: 5.35, w: 3.0, h: 0.4, fontSize: 14, color: C.accent6 });
@@ -253,7 +253,7 @@ async function build() {
     });
   }
   {
-    const s = content("Tosca에서 테스트가 만들어지는 흐름", "Tosca 테스트는 화면을 스캔해 모듈을 만들고, 모듈을 조합해 테스트케이스를 만들고, 실행해서 결과를 보는 순서로 만들어진다. MCP로 AI가 도와줄 수 있는 구간은 2번부터 5번까지다. 1번 화면 스캔은 XScan 화면에서 사람이 해야 한다. 그래서 실습용 모듈은 미리 준비해 두었다.", SEC.open);
+    const s = content("Tosca에서 테스트가 만들어지는 흐름", "Tosca 테스트는 화면을 스캔해 모듈을 만들고, 모듈을 조합해 테스트케이스를 만들고, 실행해서 결과를 보는 순서로 만들어진다. MCP로 AI가 도와줄 수 있는 구간은 2번부터 5번까지다. 2번은 이미 있는 모듈을 찾아 쓰는 것까지다. 1번 화면 스캔은 XScan 화면에서 사람이 해야 하고, AI는 화면을 스캔해 UI 모듈을 만들 수 없다. 그래서 실습용 모듈은 미리 준비해 두었다. 참고로 API 모듈은 MCP 도구로 만들 수 있다.", SEC.open);
     const steps = [
       ["1", "화면 스캔", "XScan으로 테스트할 화면을 읽는다"],
       ["2", "모듈", "화면 요소 정보가 모듈로 저장된다"],
@@ -276,7 +276,7 @@ async function build() {
     card(s, 0.6, 4.8, 5.9, 1.7, { fill: { color: C.background2 } });
     await iconImg(s, "LuScanLine", 0.85, 5.05, 0.45, HEX.accent1);
     txt(s, "새 화면은 사람이 스캔", { x: 1.45, y: 5.0, w: 4.8, h: 0.4, fontSize: 16, bold: true });
-    txt(s, "MCP는 이미 있는 모듈만 재사용한다. 새 화면이나 바뀐 화면은 XScan에서 직접 스캔해야 한다.", { x: 1.45, y: 5.42, w: 4.85, h: 0.95, fontSize: 14 });
+    txt(s, "AI는 화면을 스캔해 UI 모듈을 만들지 못한다. 새 화면이나 바뀐 화면은 XScan에서 직접 스캔한다.", { x: 1.45, y: 5.42, w: 4.85, h: 0.95, fontSize: 14 });
     card(s, 6.83, 4.8, 5.9, 1.7, { fill: { color: C.accent2, transparency: 86 } });
     await iconImg(s, "LuMessageSquare", 7.08, 5.05, 0.45, HEX.accent1);
     txt(s, "나머지는 말로 요청", { x: 7.68, y: 5.0, w: 4.8, h: 0.4, fontSize: 16, bold: true });
@@ -293,12 +293,12 @@ async function build() {
     s.addNotes("Part 1은 25분. MCP 자체를 깊게 파지는 않는다. 오늘 실습을 이해하는 데 필요한 정도, 그리고 AI에게 맡기면 안 되는 일이 무엇인지까지가 목표다.");
   }
   {
-    const s = content("MCP는 AI와 프로그램을 잇는 표준 규격", "MCP는 Model Context Protocol의 약자다. AI 앱이 외부 프로그램의 기능을 도구처럼 불러 쓸 수 있게 해 주는 공개 규격이다. 예전에는 AI 앱과 프로그램을 잇는 연동을 조합마다 따로 만들어야 했다. MCP가 생긴 뒤로는 각자 규격 하나만 맞추면 된다. 그래서 USB-C에 자주 비유한다. 2024년 11월 Anthropic이 공개했고, 2025년 12월 Linux Foundation 산하 Agentic AI Foundation으로 넘어갔다. Tricentis도 이 규격으로 Tosca용 서버를 만들었다.", SEC.p1);
+    const s = content("MCP는 AI와 프로그램을 잇는 표준 규격", "MCP는 Model Context Protocol의 약자다. AI 앱이 외부 프로그램의 기능을 도구처럼 불러 쓸 수 있게 해 주는 공개 규격이다. 예전에는 AI 앱과 프로그램을 잇는 연동을 조합마다 따로 만들어야 했다. MCP가 생긴 뒤로는 각자 규격 하나만 맞추면 된다. Tosca 입장에서는 서버 하나만 만들면 Copilot, Cursor, Claude 어디서든 붙는다는 뜻이다. 2024년 11월 Anthropic이 공개했고, 2025년 12월 Linux Foundation 산하 Agentic AI Foundation으로 넘어갔다.", SEC.p1);
     const bullets = [
       ["AI가 외부 프로그램을 도구로 쓰게 하는 규격", "Model Context Protocol의 약자. 누구나 쓸 수 있는 공개 규격"],
       ["2024년 11월 Anthropic 공개", "2025년 12월 Linux Foundation 산하 Agentic AI Foundation으로 이관"],
       ["Claude, GitHub Copilot, Cursor 등이 지원", "AI 앱 하나에 여러 MCP 서버를 붙일 수 있다"],
-      ["흔히 'AI용 USB-C'에 비유", "규격 하나만 맞추면 어느 쪽이든 연결된다"],
+      ["서버 하나로 여러 AI 앱에서 사용", "Tosca 쪽은 MCP 서버만 만들면 어느 AI 앱에서든 붙는다"],
     ];
     bullets.forEach((b, i) => {
       const y = 1.6 + i * 1.22;
@@ -400,7 +400,7 @@ async function build() {
   }
   {
     const s = content("같은 일을 할 때 무엇이 달라지나", "로그인 테스트케이스 하나를 만든다고 해 보자. 직접 하면 폴더 만들고, 모듈을 끌어다 놓고, 값을 하나씩 넣고, ActionMode를 바꾸고, 실행하고, 고치는 일을 전부 클릭으로 한다. MCP를 쓰면 사람이 하는 일은 요청하고, 계획을 확인하고, 결과를 검토하는 세 가지로 줄어든다. 단, 검토를 건너뛰면 안 된다. AI가 고른 모듈이나 값이 틀릴 수 있다.", SEC.p1);
-    const L = ["폴더 만들기", "테스트케이스 만들고 이름 바꾸기", "모듈 5개를 순서대로 끌어다 놓기", "값 8개 입력", "검증 스텝의 ActionMode를 Verify로 변경", "ScratchBook에서 실행", "결과 확인 후 틀린 곳 수정"];
+    const L = ["폴더 만들기", "테스트케이스 만들고 이름 바꾸기", "모듈을 6번 끌어다 놓아 스텝 만들기", "값 8개 입력", "검증 스텝의 ActionMode를 Verify로 변경", "ScratchBook에서 실행", "결과 확인 후 틀린 곳 수정"];
     const R = [["사람", "시나리오와 위치를 문장으로 요청"], ["AI", "모듈을 찾아 스텝 계획을 보여줌"], ["사람", "계획 확인 후 승인"], ["AI", "생성, 검증 실행, 결과 보고"], ["사람", "Commander에서 결과 검토"]];
     card(s, 0.6, 1.5, 5.9, 4.75, { fill: { color: C.background1 }, line: { color: C.background2, width: 1.5 } });
     txt(s, "Commander에서 직접", { x: 0.9, y: 1.68, w: 5, h: 0.45, fontSize: 18, bold: true, color: C.accent6 });
@@ -417,7 +417,7 @@ async function build() {
       chip(s, 7.13, y + 0.1, 0.75, 0.4, t[0], { fill: ai ? C.accent2 : C.accent1, color: ai ? C.text1 : C.background1, bold: true, fontSize: 12 });
       txt(s, t[1], { x: 8.05, y, w: 4.5, h: 0.6, fontSize: 15, valign: "middle", bold: !ai });
     });
-    txt(s, "반복 클릭은 AI가, 판단과 확인은 사람이 한다", { x: 0.6, y: 6.4, w: 12.13, h: 0.45, fontSize: 18, bold: true, color: C.text2, valign: "middle" });
+    txt(s, "클릭은 AI에게 맡기고, 확인은 사람이 직접 한다", { x: 0.6, y: 6.4, w: 12.13, h: 0.45, fontSize: 18, bold: true, color: C.text2, valign: "middle" });
   }
   {
     const s = content("도구 32개, 여섯 묶음", "Tosca MCP Server가 내놓는 도구는 스킬팩 1.2.1 기준 32개다. 외울 필요는 없다. AI가 알아서 고른다. 다만 어떤 묶음이 있는지 알면 무엇을 시킬 수 있는지 감이 온다. 실습에서 주로 쓰는 것은 조회, 작성, 실행 묶음이다. 실제 목록은 Commander 패치에 따라 조금 다를 수 있으니, Lab 0에서 AI에게 도구 목록을 직접 물어본다.", SEC.p1);
@@ -437,7 +437,7 @@ async function build() {
     txt(s, "commander-mcp 스킬팩 1.2.1 도구 카탈로그 기준. 전체 목록과 설명은 워크북 부록 A.", { x: 0.6, y: 6.5, w: 12.13, h: 0.35, fontSize: 11, color: C.accent6, valign: "middle" });
   }
   {
-    const s = content("AI에게 맡기지 않는 일", "할 수 있는 것만큼 중요한 게 맡기면 안 되는 것이다. 화면 스캔은 AI가 못 한다. 기존 모듈만 쓴다. 비밀번호 같은 민감 정보는 사람이 넣는다. Data Integrity 연결을 AI가 만들면 Allow AI queries 옵션이 꺼진 채로 만들어지고, 켜는 건 사람이 Connection Manager에서 한다. 삭제는 되돌릴 수 없으니 목록 확인 후 따로 승인한다. 실패가 진짜 결함인지 판단하는 것도 사람 몫이다. 테스트를 고쳐서 결함을 덮으면 안 된다.", SEC.p1);
+    const s = content("AI에게 맡기지 않는 일", "AI에게 맡기지 않을 일도 미리 정해 둔다. 화면 스캔은 AI가 못 한다. UI 모듈은 사람이 XScan으로 만든다. 비밀번호 같은 민감 정보는 사람이 넣는다. Data Integrity 연결을 AI가 만들면 Allow AI queries 옵션이 꺼진 채로 만들어지고, 켜는 건 사람이 Connection Manager에서 한다. 삭제는 되돌릴 수 없으니 목록 확인 후 따로 승인한다. 실패가 진짜 결함인지 판단하는 것도 사람 몫이다. 테스트를 고쳐서 결함을 덮으면 안 된다.", SEC.p1);
     const items = K.notForAI;
     const w = 5.95, h = 1.55, gx = 0.23, gy = 0.2;
     for (let i = 0; i < items.length; i++) {
@@ -450,12 +450,12 @@ async function build() {
     }
   }
   {
-    const s = content("준비물과 연결 설정", "실습 전에 이 네 가지가 준비돼 있어야 한다. Commander는 2026.1 LTS Patch 1 이상이어야 하고, Patch 1이라면 MCP Server 애드인을 직접 켜야 한다. AI 클라이언트는 Tricentis가 테스트했다고 밝힌 네 가지 중 하나를 쓴다. 설정은 서버 주소 한 줄이 전부다. 오른쪽은 VS Code 예시이고, 나머지 클라이언트 설정은 워크북 2장에 있다. 스킬팩은 필수는 아니지만 Tricentis도 함께 쓰기를 권한다. 설치하면 AI가 체크아웃, 저장 같은 규칙을 알아서 지킨다.", SEC.p1);
+    const s = content("준비물과 연결 설정", "실습 전에 이 네 가지가 준비돼 있어야 한다. Commander는 2026.1 LTS Patch 1 이상이어야 하고, Patch 1이라면 MCP Server 애드인을 직접 켜야 한다. AI 클라이언트는 Tricentis가 테스트했다고 밝힌 네 가지 중 하나를 쓴다. 설정은 서버 주소 한 줄이 전부다. 오른쪽은 VS Code 예시이고, 나머지 클라이언트 설정은 워크북 2장에 있다. 스킬팩은 Tricentis 문서가 함께 쓰라고 권하고, 스킬팩 안내서에는 MCP 연결과 스킬팩이 둘 다 필요하다고 되어 있다. 이 과정은 설치를 전제로 한다. 설치하면 AI가 체크아웃, 저장, 대화상자를 여는 작업 피하기 같은 규칙을 알아서 지킨다.", SEC.p1);
     const items = [
       ["Tosca Commander 2026.1 LTS Patch 1 이상", "Patch 2 이상이면 MCP Server 애드인이 기본으로 켜져 있다"],
       ["실습 워크스페이스 열기", "실습 내내 열어 둔다. 닫으면 연결이 끊긴다"],
       ["AI 클라이언트 하나", "VS Code + GitHub Copilot, Cursor, Claude Code, Claude Desktop"],
-      ["commander-mcp 스킬팩 (권장)", "github.com/Tricentis/mcp-skills 의 Tosca/Commander/MCP"],
+      ["commander-mcp 스킬팩", "MCP 연결과 함께 설치. github.com/Tricentis/mcp-skills"],
     ];
     for (let i = 0; i < items.length; i++) {
       const y = 1.6 + i * 1.2;
@@ -482,7 +482,7 @@ async function build() {
     s.addNotes("이제 실습. 워크북 3장을 펴게 한다. 각 Lab마다 입력할 프롬프트가 워크북에 그대로 있으니 복사해서 쓰면 된다. [내 이름] 같은 대괄호 부분만 바꾼다. 막히면 Lab 끝의 '막히면' 칸부터 보게 한다.");
   }
   {
-    const s = content("실습 시나리오: Demo Web Shop 로그인", "실습 대상은 Tricentis가 공개한 연습용 쇼핑몰 Demo Web Shop이다. 시나리오는 로그인하고, 계정 이메일이 맞게 보이는지 검증하고, 로그아웃하는 것. 모듈은 미리 XScan으로 스캔해서 워크스페이스에 넣어 두었다. MCP로는 모듈을 만들 수 없기 때문이다. 실습 계정은 따로 나눠 준다. 사내 앱으로 바꿔도 흐름은 똑같다.", SEC.p2);
+    const s = content("실습 시나리오: Demo Web Shop 로그인", "실습 대상은 Tricentis가 공개한 연습용 쇼핑몰 Demo Web Shop이다. 시나리오는 로그인하고, 계정 이메일이 맞게 보이는지 검증하고, 로그아웃하는 것. 모듈은 미리 XScan으로 스캔해서 워크스페이스에 넣어 두었다. AI는 화면을 스캔해 모듈을 만들 수 없기 때문이다. 실습 계정 이메일은 따로 나눠 주고, 비밀번호는 TCP로 넣어 두었다. 사내 앱으로 바꿔도 흐름은 똑같다.", SEC.p2);
     card(s, 0.6, 1.5, 5.6, 5.0, { fill: { color: C.background2 } });
     await iconCircle(s, "LuShoppingCart", 0.9, 1.8, 0.7);
     txt(s, "Tricentis Demo Web Shop", { x: 1.8, y: 1.8, w: 4.2, h: 0.4, fontSize: 18, bold: true });
@@ -508,7 +508,7 @@ async function build() {
     s.addTable(rows, { x: 6.6, y: 1.95, w: 6.13, colW: [1.55, 1.85, 2.73], rowH: 0.55, fontSize: 13, color: C.text1, valign: "middle", border: { type: "solid", pt: 0.75, color: C.background2 }, margin: [0.04, 0.08, 0.04, 0.08], objectName: nm("table") });
     card(s, 6.6, 5.0, 6.13, 1.5, { fill: { color: C.accent2, transparency: 86 } });
     await iconImg(s, "LuInfo", 6.85, 5.2, 0.4, HEX.accent1);
-    txt(s, "Header, Login은 강사가 XScan으로 미리 스캔했다. MCP는 모듈을 새로 만들지 않으므로, 없는 화면은 사람이 먼저 스캔해야 한다.", { x: 7.4, y: 5.15, w: 5.15, h: 1.2, fontSize: 14 });
+    txt(s, "Header, Login은 강사가 XScan으로 미리 스캔했다. AI는 화면을 스캔하지 못하므로, 없는 화면은 사람이 먼저 스캔해야 한다.", { x: 7.4, y: 5.15, w: 5.15, h: 1.2, fontSize: 14 });
   }
   {
     const s = content("실습 진행 순서", "되돌리기 쉬운 작업부터 한다. Lab 0과 Lab 1은 조회만 하므로 아무것도 바뀌지 않는다. Lab 2와 Lab 3에서 테스트케이스를 만들고, Lab 4에서 값을 바꿔 가며 실행한다. Lab 5에서 저장한다. 시간은 대략이고, 빨리 끝난 사람은 워크북의 추가 과제를 한다.", SEC.p2);
@@ -534,7 +534,7 @@ async function build() {
     txt(s, "워크스페이스에서 바뀌는 것", { x: 0.6, y: 5.3, w: 4, h: 0.35, fontSize: 11, color: C.accent6 });
     card(s, 0.6, 5.8, 12.13, 0.8, { fill: { color: C.background2 } });
     await iconImg(s, "LuUndo2", 0.85, 5.98, 0.42, HEX.accent1);
-    txt(s, "조회 → 생성 → 수정 → 저장 순서. 되돌리기 쉬운 작업부터 진행한다.", { x: 1.45, y: 5.8, w: 11, h: 0.8, fontSize: 16, bold: true, valign: "middle" });
+    txt(s, [{ text: "조회 → 생성 → 수정 → 저장 순서. 되돌리기 쉬운 작업부터 진행한다.", options: { bold: true, breakLine: true } }, { text: "테스트케이스는 만들 때 바로 저장된다. 값을 바꾼 경우에만 저장을 따로 요청한다.", options: { fontSize: 13, color: C.accent6 } }], { x: 1.45, y: 5.8, w: 11, h: 0.8, fontSize: 16, valign: "middle" });
   }
   {
     const L = K.labs[0];
@@ -601,7 +601,7 @@ async function build() {
     const rows = [head];
     K.lab3Steps.forEach((r) => {
       const verify = r[4] === "Verify";
-      rows.push(r.map((c, j) => ({ text: j === 3 ? c.replace("https://", "") : c, options: { fill: { color: verify ? "FCEFD8" : C.background1 }, bold: verify && j === 4, fontFace: j === 3 && c.startsWith("{") ? MONO : undefined } })));
+      rows.push(r.map((c, j) => ({ text: c, options: { fill: { color: verify ? "FCEFD8" : C.background1 }, bold: verify && j === 4, fontFace: j === 3 && c.startsWith("{") ? MONO : undefined } })));
     });
     s.addTable(rows, { x: 7.25, y: 1.95, w: 5.48, colW: [0.35, 1.2, 0.9, 2.05, 0.98], rowH: 0.38, fontSize: 10.5, color: C.text1, valign: "middle", border: { type: "solid", pt: 0.5, color: C.background2 }, margin: [0.03, 0.06, 0.03, 0.06], objectName: nm("table") });
     card(s, 7.25, 5.75, 5.48, 1.0, { fill: { color: C.background2 } });
@@ -610,14 +610,14 @@ async function build() {
   }
   {
     const L = K.labs[3];
-    const s = content("Lab 3  자동 테스트케이스 (2) 승인하고 확인", "계획이 맞으면 3-2로 승인한다. AI가 만든 뒤에는 스텝 구조를 다시 읽어 달라고 해서 계획과 같은지 본다. 그리고 반드시 Commander에서 직접 열어 본다. 만약 모듈을 못 찾았다는 답이 오면, 그 화면은 사람이 XScan으로 스캔한 다음 같은 프롬프트로 다시 요청하면 된다. 비밀번호는 실습이라 그대로 넣지만, 실무에서는 사내 규칙대로 관리한다.", SEC.p2);
+    const s = content("Lab 3  자동 테스트케이스 (2) 승인하고 확인", "계획이 맞으면 3-2로 승인한다. AI가 만든 뒤에는 스텝 구조를 다시 읽어 달라고 해서 계획과 같은지 본다. 그리고 반드시 Commander에서 직접 열어 본다. Password 값이 실제 비밀번호가 아니라 {CP[DWS_Password]} 참조인지도 본다. 비밀번호를 프롬프트에 쓰면 클라우드 모델로 넘어가기 때문이다. 모듈을 못 찾았다는 답이 오면, 그 화면은 사람이 XScan으로 스캔한 다음 같은 프롬프트로 다시 요청한다. 두세 번 고쳐도 안 되면 완성본을 복사해 Lab 4로 넘어간다. 여기까지 끝나면 10분 휴식.", SEC.p2);
     labTag(s, L.id, L.time);
     promptBox(s, 0.6, 1.5, 6.0, 1.3, `프롬프트 ${L.prompts[1].label}`, L.prompts[1].text, 13);
     sectionHead(s, 0.6, 3.05, 6, "확인 포인트");
-    checkList(s, 0.6, 3.45, 6.0, L.checks, { fs: 14, rowH: 0.5 });
-    card(s, 0.6, 5.6, 6.0, 1.15, { fill: { color: C.accent2, transparency: 86 } });
-    await iconImg(s, "LuTriangleAlert", 0.82, 5.85, 0.42, HEX.accent5);
-    txt(s, "모듈이 없다는 답이 오면: 사람이 XScan으로 스캔 → 같은 프롬프트로 다시 요청", { x: 1.4, y: 5.65, w: 5.05, h: 1.05, fontSize: 14, valign: "middle" });
+    checkList(s, 0.6, 3.42, 6.0, L.checks, { fs: 13.5, rowH: 0.45 });
+    card(s, 0.6, 5.85, 6.0, 0.9, { fill: { color: C.accent2, transparency: 86 } });
+    await iconImg(s, "LuTriangleAlert", 0.82, 6.08, 0.42, HEX.accent5);
+    txt(s, "모듈이 없다는 답이 오면: 사람이 XScan으로 스캔 → 같은 프롬프트로 다시 요청", { x: 1.4, y: 5.85, w: 5.05, h: 0.9, fontSize: 13.5, valign: "middle" });
     await treePanel(s, 6.95, 1.5, 5.78, 5.25, "Commander에서 확인", [
       { lvl: 0, type: "folder", name: "TestCases / MCP실습 / 홍길동" },
       { lvl: 1, type: "tc", name: "로그인 성공_자동", bold: true },
@@ -655,17 +655,17 @@ async function build() {
     txt(s, "실행 중에는 마우스와 키보드를 건드리지 않는다", { x: 1.15, y: 5.35, w: 5.3, h: 0.62, fontSize: 14, valign: "middle" });
     await iconImg(s, "LuCirclePause", 6.85, 5.45, 0.42, HEX.accent1);
     txt(s, "실행은 한 번에 하나. 응답이 끊겨도 다시 실행하지 말고 결과만 다시 묻는다", { x: 7.4, y: 5.35, w: 5.33, h: 0.62, fontSize: 14, valign: "middle" });
-    txt(s, "AI가 쓰는 도구: execute_test_suite (is_validation_run=true), execute_test_suite_status, set_attribute", { x: 0.6, y: 6.2, w: 12.13, h: 0.35, fontSize: 11, color: C.accent6, valign: "middle" });
+    txt(s, "AI가 쓰는 도구: save_workspace, execute_test_suite (is_validation_run=true), execute_test_suite_status, set_attribute", { x: 0.6, y: 6.2, w: 12.13, h: 0.35, fontSize: 11, color: C.accent6, valign: "middle" });
   }
   {
     const L = K.labs[5];
-    const s = content("Lab 5  저장, 그리고 막혔을 때", "마지막으로 오늘 만든 것을 정리하고 저장한다. 싱글 유저는 저장으로 끝이다. 멀티 유저라면 저장 후 체크인까지 해야 다른 사람에게 보인다. 체크인 전에는 바뀐 객체 목록을 먼저 보는 습관을 들인다. 오른쪽은 실습에서 자주 막히는 지점이다. 전체 목록은 워크북 부록 B에 있다.", SEC.p2);
+    const s = content("Lab 5  저장, 그리고 막혔을 때", "마지막으로 오늘 만든 것을 정리하고 저장한다. 테스트케이스는 만들 때 이미 저장됐으니, 여기서 저장하는 건 Lab 4처럼 값을 바꾼 것이다. 싱글 유저는 저장으로 끝이다. 멀티 유저라면 시작할 때 update_all로 최신 내용을 받고, 고칠 객체를 체크아웃하고, 끝에 저장과 체크인을 한다. 체크인은 내가 체크아웃한 객체 전부에 적용되므로 목록을 먼저 본다. 오른쪽은 실습에서 자주 막히는 지점이다. 전체 목록은 워크북 부록 B에 있다.", SEC.p2);
     labTag(s, L.id, L.time);
     promptBox(s, 0.6, 1.5, 5.6, 1.35, `프롬프트 ${L.prompts[0].label}`, L.prompts[0].text, 13);
     const rows = [
-      [{ text: "", options: { fill: { color: C.accent1 } } }, { text: "작업 끝에 하는 일", options: { bold: true, color: C.background1, fill: { color: C.accent1 } } }],
-      [{ text: "싱글 유저", options: { bold: true, fill: { color: C.background2 } } }, { text: "save_workspace", options: { fontFace: MONO, fill: { color: C.background2 } } }],
-      [{ text: "멀티 유저", options: { bold: true } }, { text: "update_all → 편집 → save_workspace → check_in_all", options: { fontFace: MONO } }],
+      [{ text: "", options: { fill: { color: C.accent1 } } }, { text: "시작과 끝에 하는 일", options: { bold: true, color: C.background1, fill: { color: C.accent1 } } }],
+      [{ text: "싱글 유저", options: { bold: true, fill: { color: C.background2 } } }, { text: "끝: save_workspace", options: { fontFace: MONO, fill: { color: C.background2 } } }],
+      [{ text: "멀티 유저", options: { bold: true } }, { text: "시작: update_all → Checkout\n끝: save_workspace → check_in_all", options: { fontFace: MONO } }],
     ];
     s.addTable(rows, { x: 0.6, y: 3.1, w: 5.6, colW: [1.3, 4.3], rowH: 0.55, fontSize: 12, color: C.text1, valign: "middle", border: { type: "solid", pt: 0.75, color: C.background2 }, margin: [0.04, 0.08, 0.04, 0.08], objectName: nm("table") });
     card(s, 0.6, 4.95, 5.6, 1.8, { fill: { color: C.background2 } });
@@ -680,10 +680,10 @@ async function build() {
       const t = K.troubleshooting[idx];
       tr.push([{ text: t[0], options: { bold: true, fill: { color: i % 2 ? C.background1 : C.background2 } } }, { text: t[2], options: { fill: { color: i % 2 ? C.background1 : C.background2 } } }]);
     });
-    s.addTable(tr, { x: 6.55, y: 1.95, w: 6.18, colW: [2.1, 4.08], fontSize: 11.5, color: C.text1, valign: "middle", border: { type: "solid", pt: 0.75, color: C.background2 }, margin: [4, 6, 4, 6], objectName: nm("table") });
-    card(s, 6.55, 5.35, 6.18, 1.4, { fill: { color: C.accent2, transparency: 86 } });
-    await iconImg(s, "LuLifeBuoy", 6.8, 5.6, 0.42, HEX.accent1);
-    txt(s, "그래도 안 되면 AI에게 받은 응답을 그대로 복사해 강사에게 보여 준다. 증상 8가지 전체는 워크북 부록 B.", { x: 7.4, y: 5.45, w: 5.15, h: 1.2, fontSize: 13, valign: "middle" });
+    s.addTable(tr, { x: 6.55, y: 1.95, w: 6.18, colW: [2.0, 4.18], fontSize: 11, color: C.text1, valign: "middle", border: { type: "solid", pt: 0.75, color: C.background2 }, margin: [4, 6, 4, 6], objectName: nm("table") });
+    card(s, 6.55, 5.85, 6.18, 0.9, { fill: { color: C.accent2, transparency: 86 } });
+    await iconImg(s, "LuLifeBuoy", 6.75, 6.08, 0.42, HEX.accent1);
+    txt(s, "그래도 안 되면 AI 응답을 그대로 복사해 강사에게 보여 준다. 전체 8가지는 워크북 부록 B.", { x: 7.32, y: 5.85, w: 5.25, h: 0.9, fontSize: 12.5, valign: "middle" });
   }
 
   // ================= Part 3 =================
@@ -692,11 +692,11 @@ async function build() {
     const s = pres.addSlide({ masterName: "SECTION", sectionTitle: SEC.p3 });
     s.addText("03", { placeholder: "num" });
     s.addText("활용사례와 프롬프트 작성법", { placeholder: "title" });
-    s.addText("현업에서 많이 쓰는 여섯 가지와, 결과를 바꾸는 프롬프트 쓰는 법", { placeholder: "body" });
+    s.addText("업무에 써 볼 만한 여섯 가지와 프롬프트 쓰는 법", { placeholder: "body" });
     s.addNotes("실습에서 손으로 해 봤으니, 이제 실제 업무에 어디에 쓸지와 프롬프트를 어떻게 써야 원하는 결과가 나오는지 정리한다.");
   }
   {
-    const s = content("현업에서 많이 쓰는 여섯 가지", "Commander MCP를 쓰는 팀에서 자주 나오는 쓰임새를 여섯 가지로 묶었다. 각 카드 아래에는 사람이 꼭 확인해야 할 것과, 바로 쓸 수 있는 템플릿 번호를 적어 두었다. 오늘 실습은 1번과 2번이었다. 4번 실패 원인 분석은 매일 아침 야간 실행 결과를 볼 때 특히 쓸모가 크다. 6번은 라이선스와 권한 설정이 필요하다.", SEC.p3);
+    const s = content("업무에 써 볼 만한 여섯 가지", "공식 워크플로와 도구를 기준으로 업무에 바로 적용해 볼 수 있는 쓰임새를 여섯 가지로 묶었다. 각 카드 아래에는 사람이 꼭 확인해야 할 것과 바로 쓸 수 있는 템플릿 번호를 적어 두었다. 오늘 실습은 1번과 2번이었다. 4번 실패 원인 분석은 야간 실행 결과를 볼 때 쓸모가 크다. 6번 중 API 모듈 만들기는 대응하는 공식 워크플로가 없어 템플릿이 없으므로 네 요소로 직접 쓴다. Data Integrity는 라이선스와 권한 설정이 필요하다.", SEC.p3);
     const w = 3.9, h = 2.5, gx = 0.215, gy = 0.2;
     K.useCases.forEach((u, i) => {
       const col = i % 3, row = Math.floor(i / 3);
@@ -738,7 +738,7 @@ async function build() {
     txt(s, "프롬프트에 없는 정보는 AI가 추측하거나 다시 묻는다. 추측이 틀리면 엉뚱한 곳에 만들어진다.", { x: 0.6, y: 6.1, w: 12.13, h: 0.5, fontSize: 15, bold: true, color: C.text2, valign: "middle" });
   }
   {
-    const s = content("프롬프트는 네 가지 요소로 쓴다", "Tricentis는 MCP 프롬프트를 쓸 때 구체적으로, 맥락을 주고, 단계를 나누라고 권한다. 이걸 실무에서 바로 쓰기 좋게 대상, 작업, 조건, 확인 네 가지로 정리했다. 대상은 어디서, 작업은 무엇을, 조건은 어떻게, 확인은 결과를 어떻게 받을지다. 아래 예시처럼 네 가지가 다 들어가면 AI가 추측할 여지가 거의 없다.", SEC.p3);
+    const s = content("프롬프트는 네 가지 요소로 쓴다", "Tricentis는 MCP 프롬프트를 쓸 때 구체적으로 쓰고, 맥락을 주고, 단계를 나눠 요청하라고 권한다. 이걸 실무에서 바로 쓰기 좋게 대상, 작업, 조건, 확인 네 가지로 정리했다. 대상은 어디서, 작업은 무엇을, 조건은 어떻게, 확인은 결과를 어떻게 받을지다. 아래 예시처럼 네 가지가 다 들어가면 AI가 추측할 여지가 거의 없다.", SEC.p3);
     const w = 2.86, gap = 0.23, y = 1.5, h = 3.25;
     K.promptElements.forEach((e, i) => {
       const x = 0.6 + i * (w + gap);
@@ -775,7 +775,7 @@ async function build() {
     }
   }
   {
-    const s = content("결과를 바꾸는 습관 일곱 가지", "일곱 가지 중 하나만 고르라면 세 번째, 바꾸는 일은 계획부터다. 계획을 보면 AI가 무엇을 오해했는지 실행 전에 알 수 있다. 나머지는 계획을 더 정확하게 만들기 위한 습관이다. 공통 머리말 템플릿 T00에 이 습관들을 규칙으로 넣어 두었다. 대화 시작할 때 한 번 붙여 넣으면 된다.", SEC.p3);
+    const s = content("프롬프트 작성 요령 일곱 가지", "일곱 가지 중 가장 중요한 것은 세 번째, 바꾸는 일은 계획부터다. 계획을 보면 AI가 무엇을 오해했는지 실행 전에 알 수 있다. 나머지는 계획을 더 정확하게 만들기 위한 요령이다. 공통 머리말 템플릿 T00에 이 요령들을 규칙으로 넣어 두었다. 대화 시작할 때 한 번 붙여 넣으면 된다.", SEC.p3);
     const colW = 5.95;
     K.tips.forEach((t, i) => {
       const col = i < 4 ? 0 : 1, row = i < 4 ? i : i - 4;
@@ -788,7 +788,7 @@ async function build() {
     card(s, 6.78, 5.15, 5.95, 1.4, { fill: { color: C.accent2, transparency: 84 } });
     txt(s, [
       { text: "T00 공통 머리말", options: { bold: true, color: C.text2, breakLine: true } },
-      { text: "위 습관을 규칙으로 정리한 템플릿. 대화를 시작할 때 한 번 붙여 넣는다.", options: {} },
+      { text: "위 요령을 규칙으로 정리한 템플릿. 대화를 시작할 때 한 번 붙여 넣는다.", options: {} },
     ], { x: 7.03, y: 5.3, w: 5.5, h: 1.15, fontSize: 13.5 });
   }
 
@@ -798,12 +798,12 @@ async function build() {
     const s = pres.addSlide({ masterName: "SECTION", sectionTitle: SEC.p4 });
     s.addText("04", { placeholder: "num" });
     s.addText("프롬프트 템플릿", { placeholder: "title" });
-    s.addText("현재 제공되는 18종과 쓰는 방법", { placeholder: "body" });
+    s.addText("공식 워크플로 18종과, 그에 맞춘 프롬프트 템플릿", { placeholder: "body" });
     s.addNotes("마지막 파트. 지금 바로 쓸 수 있는 템플릿을 소개한다. 전체 문구는 워크북 5장에 있으니 슬라이드에서는 구성과 쓰는 법만 본다.");
   }
   {
-    const s = content("현재 제공되는 템플릿 18종", "Tricentis가 공개한 commander-mcp 스킬팩 1.2.1에는 AI가 따라 하는 작업 순서, 즉 워크플로 템플릿 18종이 들어 있다. 이건 AI용이다. 우리는 이 18종에 하나씩 대응하는 사람용 프롬프트 템플릿을 만들었다. 번호와 순서가 공식 워크플로와 같아서, 스킬팩을 설치한 상태라면 AI가 해당 워크플로를 그대로 따른다. 여섯 묶음 중 실행·분석이 7종으로 가장 많다.", SEC.p4);
-    txt(s, "commander-mcp 스킬팩(1.2.1)의 워크플로 18종에 1:1로 맞춘 사람용 프롬프트 템플릿. 전체 문구는 워크북 5장.", { x: 0.6, y: 1.42, w: 12.13, h: 0.45, fontSize: 14, color: C.accent6, valign: "middle" });
+    const s = content("공식 워크플로 18종과 프롬프트 템플릿", "먼저 구분할 것이 있다. Tricentis가 공개한 commander-mcp 스킬팩 1.2.1에 들어 있는 것은 AI가 따라 하는 작업 순서, 즉 워크플로 템플릿 18종이다. 이건 AI용이고 Tricentis가 제공한다. 사람이 입력하는 프롬프트 템플릿 T00~T18은 이 과정에서 그 18종에 하나씩 맞춰 만든 것이다. 번호는 대응 관계를 찾기 쉽게 공식 목록 순서를 따랐다. 스킬팩이 설치돼 있으면 AI는 요청 내용에 맞는 워크플로를 골라 따르고, 템플릿은 그 워크플로에 필요한 정보를 빠짐없이 주는 역할을 한다.", SEC.p4);
+    txt(s, "Tricentis 스킬팩(1.2.1)이 제공하는 AI용 워크플로 18종에, 이 과정에서 만든 사람용 프롬프트 템플릿을 1:1로 맞췄다. 전체 문구는 워크북 5장.", { x: 0.6, y: 1.42, w: 12.13, h: 0.45, fontSize: 14, color: C.accent6, valign: "middle" });
     chip(s, 0.6, 2.0, 1.75, 0.5, "T00", { fill: C.accent2, bold: true, fontSize: 13 });
     txt(s, "공통 머리말: 대화를 시작할 때 한 번 붙여 넣는 규칙 6줄", { x: 2.5, y: 2.0, w: 10, h: 0.5, fontSize: 14, bold: true, valign: "middle" });
     // 세 열에 묶음 카드를 쌓는다. 실행·분석(7종)은 한 열을 혼자 쓴다.
@@ -834,7 +834,7 @@ async function build() {
     const runs = [];
     const lines = t.prompt.split("\n");
     lines.forEach((ln, li) => {
-      const parts = ln.split(/(\[[^\]]+\])/).filter((p) => p !== "");
+      const parts = ln.split(/((?<!\{CP|\{B)\[[^\]]+\])/).filter((p) => p !== "");
       parts.forEach((part, pi) => {
         const o = part.startsWith("[") ? { bold: true, color: C.accent5 } : {};
         if (pi === parts.length - 1 && li < lines.length - 1) o.breakLine = true;
@@ -879,7 +879,7 @@ async function build() {
     await iconCircle(s, "LuPuzzle", 0.9, 5.2, 0.8);
     txt(s, [
       { text: "스킬팩과 템플릿의 역할 분담", options: { bold: true, color: C.text2, breakLine: true } },
-      { text: "스킬팩을 설치하면 AI가 공식 워크플로 순서를 스스로 따른다. 템플릿은 그 워크플로에 필요한 정보(경로, 범위, 값, 확인 방식)를 빠짐없이 넘겨주는 역할이다.", options: {} },
+      { text: "스킬팩을 설치하면 AI가 요청에 맞는 공식 워크플로를 골라 순서대로 따른다. 템플릿은 그 워크플로에 필요한 정보(경로, 범위, 값, 확인 방식)를 빠짐없이 넘겨주는 역할이다.", options: {} },
     ], { x: 1.95, y: 5.0, w: 10.55, h: 1.35, fontSize: 14, valign: "middle" });
   }
 
@@ -890,7 +890,7 @@ async function build() {
     s.addText("오늘 정리", { placeholder: "title" });
     const take = [
       ["MCP는 AI가 Commander를 다루게 해 주는 연결 규격", "Commander 2026.1 Patch 1부터 애드인으로 들어 있다"],
-      ["AI는 기존 모듈로 만들고, 사람은 계획과 결과를 본다", "스캔, 비밀번호, 삭제, 결함 판단은 사람 몫"],
+      ["AI가 만들고, 사람은 계획과 결과를 확인한다", "화면 스캔, 비밀번호, 삭제, 결함 판단은 사람 몫"],
       ["템플릿으로 시작해서 우리 업무에 맞게 고친다", "T00 머리말 + 공식 워크플로 18종 대응 템플릿"],
     ];
     take.forEach((t, i) => {

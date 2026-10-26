@@ -166,7 +166,7 @@ const lab3Steps = [
   ["1", "OpenUrl", "Url", "https://demowebshop.tricentis.com", "Input"],
   ["2", "Header", "Log in", "{CLICK}", "Input"],
   ["3", "Login", "Email", "[실습 이메일]", "Input"],
-  ["", "Login", "Password", "[실습 비밀번호]", "Input"],
+  ["", "Login", "Password", "{CP[DWS_Password]}", "Input"],
   ["", "Login", "Log in", "{CLICK}", "Input"],
   ["4", "Header", "Account", "[실습 이메일]", "Verify"],
   ["5", "Header", "Log out", "{CLICK}", "Input"],
@@ -230,7 +230,7 @@ const labs = [
 1. 브라우저에서 https://demowebshop.tricentis.com 에 접속한다 / 메인 화면이 열린다
 2. 상단의 Log in 링크를 클릭한다 / 로그인 화면이 열린다
 3. 실습 계정 이메일과 틀린 비밀번호를 넣고 Log in 버튼을 클릭한다 / 'Login was unsuccessful' 문구가 보인다
-작업 상태(TestCaseWorkState)는 IN_WORK로 해줘.
+작업 상태(TestCaseWorkState)는 IN_WORK로 해줘. 메뉴 작업 말고 속성 변경(set_attribute)으로 바꿔.
 만들기 전에 어떤 순서로 작업할지 먼저 보여줘.`,
       },
       { label: "2-2", text: "좋아, 그 순서대로 진행해줘. 끝나면 만든 테스트케이스의 스텝을 다시 읽어서 보여줘." },
@@ -245,15 +245,15 @@ const labs = [
     record: ["만든 테스트케이스 경로", "스텝 수"],
     stuck: [
       ["기대 결과가 빠짐", "\"3개 스텝 모두 기대 결과를 넣었는지 확인하고, 빠진 것만 채워줘\"라고 다시 요청한다."],
-      ["Commander 화면에 대화상자가 뜨고 멈춤", "대화상자를 닫고 \"이름과 설명은 속성 변경(set_attribute)으로 해줘\"라고 지시한다. 스킬팩을 설치하면 대부분 예방된다."],
+      ["Commander 화면에 대화상자가 뜨고 멈춤", "AI가 작업 상태나 이름을 메뉴 작업으로 바꾸려 한 경우다. 대화상자를 닫고 \"작업 상태와 이름은 속성 변경(set_attribute)으로 해줘\"라고 지시한다."],
     ],
   },
   {
     id: "Lab 3", title: "자동 테스트케이스 만들기", time: "25분",
     goal: "기존 모듈을 재사용해 로그인 자동화 테스트케이스를 만든다. 계획을 먼저 받고 승인하는 흐름을 익힌다.",
     before: [
-      "[실습 이메일], [실습 비밀번호]는 강사가 나눠 준 계정으로 바꾼다.",
-      "실무에서는 비밀번호를 평문 값으로 두지 않는다. 오늘은 실습이라 그대로 넣는다.",
+      "[실습 이메일]은 강사가 나눠 준 계정 이메일로 바꾼다.",
+      "비밀번호는 AI에게 보내지 않는다. 강사가 TestCases/MCP실습 폴더에 DWS_Password라는 TCP로 넣어 두었으므로, 프롬프트에는 참조 {CP[DWS_Password]}만 적는다.",
     ],
     prompts: [
       {
@@ -263,7 +263,7 @@ const labs = [
 - 시나리오:
   1. https://demowebshop.tricentis.com 열기
   2. Header 모듈의 Log in 클릭
-  3. Login 모듈에 Email [실습 이메일], Password [실습 비밀번호] 입력 후 Log in 클릭
+  3. Login 모듈에 Email [실습 이메일], Password {CP[DWS_Password]} 입력 후 Log in 클릭
   4. Header 모듈의 Account 값이 [실습 이메일]과 같은지 Verify
   5. Log out 클릭 후 브라우저 닫기
 - 스텝별로 모듈, 속성, 값, ActionMode를 표로 보여주고, 맞는 모듈을 못 찾은 스텝은 따로 표시해줘.`,
@@ -274,6 +274,7 @@ const labs = [
     checks: [
       "계획 표를 먼저 받았고, 모든 스텝에 모듈이 매칭됐다",
       "4번 스텝(Account)의 ActionMode가 Verify다",
+      "Password 값이 {CP[DWS_Password]} 참조로 들어갔다 (실제 비밀번호가 아님)",
       "결과 표가 계획 표(기대 스텝)와 같다",
       "Commander에서 스텝과 값을 직접 확인했다",
     ],
@@ -281,6 +282,7 @@ const labs = [
     stuck: [
       ["모듈을 못 찾았다고 함", "모듈 폴더 경로를 다시 확인해 준다. 정말 없는 모듈이면 AI는 만들 수 없다. 사람이 XScan으로 스캔한 뒤 다시 요청한다."],
       ["값이 엉뚱한 속성에 들어감", "\"3번 스텝의 Email 값만 [실습 이메일]로 고쳐줘\"처럼 스텝 번호와 속성을 짚어서 고친다."],
+      ["두세 번 고쳐도 계속 틀림", "강사가 준비한 완성본 TestCases/MCP실습/_완성본/로그인 성공_자동을 내 폴더로 복사해 Lab 4를 진행한다."],
     ],
   },
   {
@@ -289,12 +291,13 @@ const labs = [
     before: [
       "실행이 시작되면 브라우저가 열린다. 끝날 때까지 마우스와 키보드를 건드리지 않는다.",
       "실행은 한 번에 하나만 된다. 앞 실행이 끝나기 전에 다음 요청을 보내지 않는다.",
+      "실행은 저장된 상태로 돈다. 값을 바꾼 뒤 저장하지 않으면 바뀐 값이 실행에 들어가지 않는다.",
     ],
     prompts: [
-      { label: "4-1", text: "'로그인 성공_자동' 테스트케이스를 ScratchBook에서 검증 실행해줘. 끝나면 스텝별 통과/실패를 표로 보여줘." },
-      { label: "4-2", text: "같은 테스트케이스에서 Account의 Verify 값을 wrong@example.com 으로 바꾸고 다시 검증 실행해줘." },
+      { label: "4-1", text: "워크스페이스를 저장한 다음 '로그인 성공_자동' 테스트케이스를 ScratchBook에서 검증 실행해줘. 끝나면 스텝별 통과/실패를 표로 보여줘." },
+      { label: "4-2", text: "같은 테스트케이스에서 Account의 Verify 값을 wrong@example.com 으로 바꾸고, 저장한 다음 다시 검증 실행해줘." },
       { label: "4-3", text: "실패한 스텝과 메시지를 알려줘. 원인이 테스트 데이터 문제인지 애플리케이션 문제인지 근거와 함께 설명해줘. 아직 고치지는 마." },
-      { label: "4-4", text: "Verify 값을 원래 [실습 이메일]로 되돌리고 다시 검증 실행해줘. 통과하면 결과 표를 보여줘." },
+      { label: "4-4", text: "Verify 값을 원래 [실습 이메일]로 되돌리고, 저장한 다음 다시 검증 실행해줘. 통과하면 결과 표를 보여줘." },
     ],
     tools: ["save_workspace", "execute_test_suite (is_validation_run=true)", "execute_test_suite_status", "set_attribute"],
     checks: [
@@ -312,10 +315,10 @@ const labs = [
   {
     id: "Lab 5", title: "저장과 정리", time: "10분",
     goal: "작업 결과를 저장하고, 멀티 유저 환경에서는 무엇이 더 필요한지 확인한다.",
-    before: ["오늘 실습 워크스페이스는 싱글 유저다. 5-2는 멀티 유저일 때 쓰는 문장으로 읽기만 한다."],
+    before: ["Lab 2, Lab 3에서 만든 테스트케이스는 만들 때 이미 저장됐다. 저장이 필요한 것은 Lab 4처럼 값을 바꾼 경우다.", "AI가 오늘 바꾼 것을 기억하려면 Lab 0부터 같은 대화창을 써야 한다. 새 대화를 열었다면 경로를 직접 알려 준다.", "오늘 실습 워크스페이스는 싱글 유저다. 5-2는 멀티 유저일 때 쓰는 문장으로 읽기만 한다."],
     prompts: [
       { label: "5-1", text: "오늘 만들거나 바꾼 객체를 경로와 함께 표로 정리하고, 워크스페이스를 저장해줘." },
-      { label: "5-2", text: "(멀티 유저일 때) 바뀐 객체 목록을 먼저 보여줘. 내가 확인하면 저장하고 체크인해줘. 체크인 코멘트는 'MCP 실습: 로그인 테스트 추가'로 남겨줘." },
+      { label: "5-2", text: "(멀티 유저일 때) 이번 대화에서 체크아웃하거나 바꾼 객체 목록을 먼저 보여줘. 체크인은 내가 체크아웃한 객체 전부에 적용되니까, 내가 목록을 확인하면 저장하고 체크인해줘. 체크인 코멘트는 'MCP 실습: 로그인 테스트 추가'로 남겨줘." },
     ],
     tools: ["save_workspace", "check_in_all (멀티 유저)", "update_all (멀티 유저)"],
     checks: [
@@ -332,7 +335,7 @@ const labs = [
 
 // AI에게 맡기지 않는 일 (슬라이드 11, 워크북 1.4)
 const notForAI = [
-  ["LuScanLine", "화면 스캔(XScan)", "AI는 이미 있는 모듈만 재사용한다. 새 화면은 사람이 XScan으로 스캔한다."],
+  ["LuScanLine", "화면 스캔(XScan)", "AI는 화면을 스캔해 UI 모듈을 만들지 못한다. 새 화면은 사람이 XScan으로 스캔한다."],
   ["LuKeyRound", "비밀번호와 접속 정보", "민감한 값은 사람이 넣는다. AI가 만든 DI 연결은 'Allow AI queries'가 꺼진 채로 생긴다."],
   ["LuTrash2", "삭제 결정", "삭제는 되돌릴 수 없다. 대상 목록을 먼저 보고 따로 승인한다."],
   ["LuBug", "결함 판단", "실패가 앱 결함인지는 사람이 판단한다. 테스트를 고쳐서 결함을 덮지 않는다."],
@@ -344,12 +347,12 @@ const notForAI = [
 const troubleshooting = [
   ["연결 거부, 서버 응답 없음", "Commander가 꺼져 있거나 워크스페이스가 닫혀 있음", "Commander 실행 → 워크스페이스 열기 → 포트 46248 확인 (디버그 빌드는 8080, 직접 바꿨다면 그 값)"],
   ["도구 목록이 비어 있음", "클라이언트에서 서버가 꺼져 있음", "서버 활성화, VS Code는 Agent 모드, 설정 저장 후 클라이언트 재시작"],
-  ["\"Unknown task ...\" 응답", "대상 또는 상위 폴더가 체크아웃되지 않음 (멀티 유저)", "\"상위 폴더를 Checkout 한 다음 다시 시도해줘\""],
+  ["\"Unknown task ...\" 응답", "작업 이름이 현재 메뉴 목록에 없음. 이름이 다르거나, 멀티 유저에서 체크아웃 전", "\"작업 목록을 다시 보고 정확한 이름으로 실행해줘\". 멀티 유저라면 대상을 먼저 Checkout (자식 생성·삭제는 상위 폴더)"],
   ["모듈을 못 찾음", "모듈 위치를 모르거나 실제로 모듈이 없음", "모듈 폴더 경로를 알려 준다. 없으면 XScan으로 스캔 후 재요청"],
-  ["Commander가 대화상자를 띄우고 멈춤", "이름·설명 변경을 메뉴 작업으로 실행함", "대화상자 닫기 → \"속성 변경(set_attribute)으로 해줘\". 스킬팩 설치로 예방"],
+  ["Commander가 대화상자를 띄우고 멈춤", "이름·설명·작업 상태 변경을 메뉴 작업으로 실행함", "대화상자 닫기 → \"속성 변경(set_attribute)으로 해줘\". 스킬팩 설치로 예방"],
   ["실행 결과가 안 돌아옴, 시간 초과", "실행이 길어 클라이언트 요청 시간이 지남", "재실행하지 말고 \"마지막 실행 결과를 확인해줘\""],
   ["다른 실행이 진행 중이라는 메시지", "실행은 워크스페이스 전체에서 한 번에 하나", "앞 실행이 끝난 뒤 요청"],
-  ["바꾼 내용이 사라짐", "저장하지 않고 Commander를 닫음", "작업 끝에 항상 저장 요청 (save_workspace)"],
+  ["바꾼 내용이 사라짐, 실행에 안 들어감", "값을 바꾼 뒤 저장하지 않음 (실행도 저장된 상태로 돈다)", "값을 바꾸면 실행 전과 작업 끝에 저장 요청 (save_workspace)"],
 ];
 
 // Part 3 활용사례
@@ -437,7 +440,7 @@ const preamble = {
 2. 무언가를 만들거나 바꾸기 전에는 쓸 도구와 대상을 표로 보여주고 내 승인을 기다려.
 3. 삭제, 체크인, Checkout Tree는 따로 한 번 더 확인받아.
 4. UI 모듈을 새로 스캔하지 마. 필요한 모듈이 없으면 없다고 알려줘.
-5. 이름이나 설명을 바꿀 때는 메뉴 작업 말고 속성 변경(set_attribute)으로 해.
+5. 이름, 설명, 작업 상태(TestCaseWorkState)는 메뉴 작업 말고 속성 변경(set_attribute)으로 바꿔.
 6. 작업이 끝나면 바뀐 객체와 경로를 정리하고, 저장했는지 알려줘.`,
 };
 
@@ -495,7 +498,7 @@ const templates = [
 스텝 (지시 / 기대 결과):
 1. [지시] / [기대 결과]
 2. [지시] / [기대 결과]
-작업 상태(TestCaseWorkState): [PLANNED / IN_WORK / COMPLETED]
+작업 상태(TestCaseWorkState): [PLANNED / IN_WORK / COMPLETED], 속성 변경(set_attribute)으로
 만들기 전에 작업 순서를 먼저 보여줘.`,
     example: "Lab 2 프롬프트 2-1",
     tools: "create_test_cases, list_available_tasks, execute_task (Manual XTestStep), set_attribute, save_workspace",
@@ -514,7 +517,7 @@ const templates = [
 스텝별로 모듈, 속성, 값, ActionMode를 표로 보여주고, 맞는 모듈이 없는 스텝은 따로 표시해줘.`,
     example: "Lab 3 프롬프트 3-1 → 승인 후 3-2",
     tools: "list_assets, get_object_info, create_test_cases, set_attribute, execute_test_suite, execute_test_suite_status",
-    caution: "모듈이 없는 스텝은 사람이 XScan으로 스캔해야 한다. 버퍼 값은 소비하는 쪽에서 {B[이름]}으로 참조된다.",
+    caution: "모듈이 없는 스텝은 사람이 XScan으로 스캔해야 한다. 비밀번호 같은 값은 프롬프트에 쓰지 말고 TCP 참조 {CP[이름]}로 넣는다. 버퍼 값은 소비하는 쪽에서 {B[이름]}으로 참조된다.",
   },
   {
     id: "T07", title: "테스트케이스 설명", workflow: "explain-test-case", group: "조회",
@@ -530,7 +533,7 @@ const templates = [
     prompt: "[테스트케이스 경로 또는 ExecutionList 경로]를 실행해줘. 테스트케이스면 ScratchBook 검증 실행으로, ExecutionList면 일반 실행으로 해줘. 실행 전에 워크스페이스를 저장하고, 끝날 때까지 기다렸다가 통과/실패/미실행 개수와 걸린 시간을 알려줘.",
     example: "Execution/스모크 테스트를 실행해줘. ExecutionList니까 일반 실행으로 해줘. 실행 전에 워크스페이스를 저장하고, 끝날 때까지 기다렸다가 통과/실패/미실행 개수와 걸린 시간을 알려줘.",
     tools: "get_object_info, save_workspace, execute_test_suite, execute_test_suite_status",
-    caution: "실행은 한 번에 하나. 같은 ExecutionList를 다시 돌리면 이전 결과가 덮이므로, 비교가 필요하면 먼저 보관(Archive actual ExecutionLog)을 요청한다. Patch 버전에 따라 ExecutionList 실행은 지원되지 않을 수 있다.",
+    caution: "실행은 한 번에 하나. 같은 ExecutionList를 다시 돌리면 이전 결과가 덮이므로, 비교가 필요하면 먼저 보관(Archive actual ExecutionLog)을 요청한다. Tosca 2026.1 문서는 검증 실행을 테스트케이스 단위로 설명하므로, 패치 버전에 따라 ExecutionList 실행은 안 될 수 있다.",
   },
   {
     id: "T09", title: "실행 결과 찾기", workflow: "locate-execution-results", group: "실행·분석",
@@ -591,10 +594,10 @@ const templates = [
   {
     id: "T16", title: "저장과 체크인", workflow: "save-and-checkin", group: "관리",
     when: "작업을 마무리하고 결과를 저장하거나 공유할 때",
-    prompt: "이번 작업에서 바뀐 객체 목록을 경로와 함께 보여주고 저장해줘. (멀티 유저라면) 내가 목록을 확인한 뒤 체크인까지 해줘. 체크인 코멘트는 '[코멘트]'로 남겨줘.",
+    prompt: "이번 대화에서 바꾸거나 체크아웃한 객체 목록을 경로와 함께 보여주고 저장해줘. (멀티 유저라면) 체크인은 체크아웃한 객체 전부에 적용되니, 내가 목록을 확인한 뒤 체크인해줘. 체크인 코멘트는 '[코멘트]'로 남겨줘.",
     example: "Lab 5 프롬프트 5-1, 5-2",
     tools: "save_workspace, check_in_all, update_all",
-    caution: "체크인은 멀티 유저에서만 된다. 오래 편집할 때는 시작 전에 update_all로 최신 내용을 받아 두면 충돌이 줄어든다.",
+    caution: "체크인은 멀티 유저에서만 되고, 내가 체크아웃한 객체를 전부 체크인한다. create_test_cases로 만든 테스트케이스는 만들 때 이미 저장·체크인된다. 오래 편집할 때는 시작 전에 update_all로 최신 내용을 받아 두면 충돌이 줄어든다.",
   },
   {
     id: "T17", title: "Data Integrity 시작하기", workflow: "di-getting-started", group: "확장",
