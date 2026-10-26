@@ -153,7 +153,7 @@ add(
   P([run(K.meta.baseline, { color: COL.muted, size: 19 })], { after: 60 }),
   P([run(`교육 시간 ${K.meta.duration}`, { color: COL.muted, size: 19 })], { after: 3000 }),
   label("수강자 정보"),
-  recordTable(["이름", "소속", "교육일", "워크스페이스 이름", "사용한 AI 클라이언트"]),
+  recordTable(["이름", "소속", "교육일", "워크스페이스 이름", "VS Code 버전"]),
   pageBreak(),
 );
 
@@ -171,8 +171,8 @@ add(
   label("워크북 구성"),
   table(["장", "내용", "시간", "슬라이드"], [
     ["1장", "개념 정리: MCP, Tosca MCP Server, Tosca 용어, AI에게 맡기지 않는 일", "35분", "1~13"],
-    ["2장", "실습 준비: 사전 점검, 클라이언트별 연결 설정, 스킬팩 설치", "실습 전", "14~15"],
-    ["3장", "실습 Lab 0~5: 연결 확인부터 저장까지", "90분", "16~33"],
+    ["2장", "실습 준비: 사전 점검, VS Code 연결 설정, 스킬팩 설치, 도구 실행 승인, 실습 환경", "실습 전", "14~16"],
+    ["3장", `실습 Lab 1~${K.labs.length}`, "90분", "17~33"],
     ["4장", "활용사례와 프롬프트 작성법, 고쳐 쓰기 연습", "30분", "34~39"],
     ["5장", "프롬프트 템플릿 T00~T18", "25분", "40~44"],
     ["부록", "A 도구 32종 · B 문제 해결 · C 예시 답안 · D 참고 자료", "", "12, 33, 46"],
@@ -180,10 +180,10 @@ add(
   gap(200),
   label("시작 전에 알아 둘 것"),
   bullets([
-    "실습에 쓰는 워크스페이스는 1인 1개 싱글 유저 워크스페이스입니다. 다른 사람 작업에 영향을 주지 않습니다.",
-    "실습은 Lab 0부터 Lab 5까지 한 대화창에서 이어서 진행합니다. 대화를 새로 열면 AI가 앞에서 한 작업을 기억하지 못합니다.",
-    "AI 어시스턴트의 답은 매번 문구가 조금씩 다릅니다. 워크북의 화면 예시와 똑같지 않아도 확인 포인트만 맞으면 됩니다.",
-    "AI가 쓰는 모델은 대부분 클라우드에서 동작합니다. 실습 밖에서 쓸 때는 사내 AI 사용 정책을 먼저 확인하세요.",
+    "실습 환경(워크스페이스, 대상 앱, 계정)은 2.5에 정리되어 있습니다.",
+    "실습은 처음부터 끝까지 VS Code의 한 채팅 세션에서 이어서 진행합니다. 새 채팅을 열면 Copilot이 앞에서 한 작업을 기억하지 못합니다.",
+    "Copilot의 답은 매번 문구가 조금씩 다릅니다. 워크북의 예시와 똑같지 않아도 확인 포인트만 맞으면 됩니다.",
+    "Copilot의 모델은 클라우드에서 동작합니다. 실습 밖에서 쓸 때는 사내 AI 사용 정책을 먼저 확인하세요.",
   ]),
 );
 
@@ -192,16 +192,16 @@ add(
   H1("1장  개념 정리"),
   H2("1.1  MCP란"),
   P("MCP(Model Context Protocol)는 AI 앱이 외부 프로그램의 기능을 '도구(Tool)'로 불러 쓸 수 있게 해 주는 공개 규격입니다. 2024년 11월 Anthropic이 공개했고, 2025년 12월 Linux Foundation 산하 Agentic AI Foundation으로 넘어갔습니다."),
-  P("예전에는 AI 앱과 프로그램을 연결하려면 조합마다 연동을 따로 만들어야 했습니다. MCP는 규격이 하나이므로 AI 앱과 프로그램이 각자 MCP만 지원하면 서로 연결됩니다. Tosca 쪽은 MCP 서버 하나만 만들면 Copilot, Cursor, Claude 어디서든 쓸 수 있습니다."),
+  P("예전에는 AI 앱과 프로그램을 연결하려면 조합마다 연동을 따로 만들어야 했습니다. MCP는 규격이 하나이므로 AI 앱과 프로그램이 각자 MCP만 지원하면 서로 연결됩니다. VS Code의 GitHub Copilot도 MCP를 지원하므로, Commander의 MCP 서버 주소만 등록하면 Copilot이 Tosca 도구를 쓸 수 있습니다."),
   table(["구성 요소", "하는 일", "오늘 실습에서"], [
-    ["Host", "사용자가 직접 쓰는 AI 앱", "VS Code + GitHub Copilot, Cursor, Claude Desktop, Claude Code"],
-    ["Client", "Host 안에서 MCP 서버와 통신", "자동으로 동작하므로 따로 다룰 일 없음"],
+    ["Host", "사용자가 직접 쓰는 AI 앱", "VS Code + GitHub Copilot"],
+    ["Client", "Host 안에서 MCP 서버와 통신", "VS Code 안에서 자동으로 동작하므로 따로 다룰 일 없음"],
     ["Server", "프로그램의 기능을 도구로 제공", "Tosca MCP Server (Commander 애드인)"],
   ], [1600, 3400, W - 5000], { boldFirst: true }),
   gap(),
   label("요청 하나가 처리되는 순서"),
   numbered([
-    "사람이 AI 어시스턴트에 문장으로 요청합니다.",
+    "사람이 Copilot 채팅 창에 문장으로 요청합니다.",
     "AI가 요청을 읽고 어떤 도구를 어떤 순서로 쓸지 고릅니다.",
     "Client가 MCP 서버에 도구 호출을 보냅니다.",
     "서버(Tosca MCP Server)가 Commander에서 실제로 실행하고 결과를 돌려줍니다.",
@@ -216,11 +216,11 @@ add(
     ["접속 주소", "http://127.0.0.1:46248/mcp (내 PC 안에서만 접속, 디버그 빌드는 8080)"],
     ["동작 조건", "Commander가 실행 중이고 워크스페이스가 열려 있어야 함. 닫으면 연결이 끊김"],
     ["권한", "워크스페이스를 연 사용자의 권한으로 동작. 체크인·체크아웃 규칙도 똑같이 적용"],
-    ["테스트된 클라이언트", "Claude Code, Claude Desktop, Cursor, Visual Studio Code (Tricentis 문서 기준)"],
+    ["AI 클라이언트", "이 과정은 VS Code + GitHub Copilot을 씀. VS Code는 Tricentis 문서에 테스트된 클라이언트로 나와 있음"],
     ["Tosca Cloud MCP와 관계", "별개 제품. Cloud용은 원격 서버에 로그인해서 쓰며 설정 방법이 다름"],
   ], [2600, W - 2600], { boldFirst: true }),
   gap(),
-  P("지금 연결된 서버가 어떤 도구를 제공하는지는 AI에게 직접 물어보면 됩니다. Tricentis 문서도 'Give me a list of all available tools'처럼 도구 목록을 요청하라고 안내합니다. 스킬팩 1.2.1 기준 도구는 32개이며, 전체 목록은 부록 A에 있습니다."),
+  P("지금 연결된 서버가 어떤 도구를 제공하는지는 VS Code의 Open Customizations → Tools에서 tosca-commander 묶음을 펼쳐 보거나 Copilot에게 직접 물어보면 됩니다. Tricentis 문서도 'Give me a list of all available tools'처럼 도구 목록을 요청하라고 안내합니다. 스킬팩 1.2.1 기준 도구는 32개이며, 전체 목록은 부록 A에 있습니다."),
 
   H2("1.3  오늘 쓰는 Tosca 용어"),
   table(["용어", "읽는 법", "뜻"], K.terms.map((t) => [t.term, t.ko, t.desc]), [2100, 1700, W - 3800], { boldFirst: true }),
@@ -252,68 +252,76 @@ add(
   checks([
     "Tosca Commander가 2026.1 LTS Patch 1 이상이다",
     "Patch 1이라면 Tosca MCP Server Addin을 켰다 (Patch 2 이상은 기본으로 켜져 있음)",
-    "강사가 배포한 실습 워크스페이스를 열었다",
-    "사내에서 허용된 AI 클라이언트를 설치하고 로그인했다",
-    "브라우저에서 https://demowebshop.tricentis.com 이 열린다",
-    "강사에게 실습 계정을 받았다",
-    "commander-mcp 스킬팩을 설치했다 (2.3 참고)",
-    "사내 AI 사용 정책상 워크스페이스 정보를 AI 어시스턴트로 보내도 되는지 확인했다",
+    "실습 워크스페이스를 열었다",
+    "VS Code를 최신 버전으로 올리고 GitHub Copilot에 로그인했다",
+    "회사 Copilot 계정(Business, Enterprise)이라면 'MCP servers in Copilot' 정책이 허용됐는지 관리자에게 확인했다",
+    "VS Code에서 실습용 프로젝트 폴더를 열었고, 그 폴더에 스킬팩 VS Code용 지침을 설치했다 (2.3)",
+    "[실습 대상 앱에 접속된다]",
+    "[실습 계정을 받았다]",
+    "사내 AI 사용 정책상 워크스페이스 정보를 Copilot으로 보내도 되는지 확인했다",
   ]),
 
-  H2("2.2  클라이언트별 연결 설정"),
-  P("어느 클라이언트든 Commander MCP Server 주소 한 줄을 등록하면 됩니다. 서버 이름은 스킬팩 안내와 같게 tosca-commander로 맞춥니다."),
-);
-K.clients.forEach((c) => {
-  add(
-    H3(c.name),
-    P([run("설정 위치  ", { bold: true, color: COL.petrol }), run(c.where)], { after: 80, keepNext: true }),
-    codeBlock(c.code),
-    P([run("참고  ", { bold: true, color: COL.petrol }), run(c.note)], { before: 80, after: 160 }),
-  );
-});
-add(
-  P([run("포트 안내  ", { bold: true }), run("46248은 기본값입니다. 디버그 빌드는 8080을 쓰고, Commander MCP 설정에서 포트를 바꿨다면 그 값을 넣습니다.")]),
+  H2("2.2  VS Code에 서버 주소 등록"),
+  P("Commander MCP Server 주소 한 줄을 VS Code에 등록합니다. 서버 ID는 스킬팩 안내와 같게 tosca-commander로 맞춥니다."),
+  numbered(K.vscode.steps),
+  label(`저장되는 내용 (${K.vscode.configPath})`),
+  codeBlock(K.vscode.code),
+  P([run("파일 형식  ", { bold: true, color: COL.petrol }), run(K.vscode.legacy)], { before: 80 }),
+  P([run("포트 안내  ", { bold: true, color: COL.petrol }), run("46248은 기본값입니다. 디버그 빌드는 8080을 쓰고, Commander MCP 설정에서 포트를 바꿨다면 그 값을 넣습니다.")]),
+  P([run("처음 시작할 때  ", { bold: true, color: COL.petrol }), run("서버를 처음 시작하면 신뢰 확인 창이 뜰 수 있습니다. 주소가 http://127.0.0.1:46248/mcp 인지 보고 허용합니다.")]),
 
-  H2("2.3  스킬팩 설치"),
-  P("Tricentis가 공개한 commander-mcp 스킬팩은 AI 어시스턴트에게 Commander MCP를 다루는 규칙과 작업 순서를 알려 줍니다. 체크아웃과 저장 순서, 대화상자를 여는 메뉴 작업 피하기, 워크플로 템플릿 18종 같은 내용이 들어 있습니다. MCP 연결과는 별개입니다. Tricentis 문서는 둘을 함께 쓰기를 권하고, 스킬팩 안내서는 둘 다 있어야 자동화가 된다고 설명합니다. 이 과정은 스킬팩 설치를 전제로 합니다."),
-  label("Git을 쓸 수 있을 때"),
-  codeBlock("git clone https://github.com/Tricentis/mcp-skills.git\ncd mcp-skills/Tosca/Commander/MCP\n.\\Install-CommanderMcpPack.ps1 -Ide Claude"),
-  P([run("-Ide 값은 "), mono("Cursor"), run(", "), mono("Claude"), run(", "), mono("VSCode"), run(", "), mono("Windsurf"), run(" 중 하나입니다. VS Code는 "), mono("-Scope Project"), run("를 함께 지정해야 합니다.")], { before: 80 }),
-  label("스크립트 실행이 막혀 있을 때 (폴더 복사)"),
-  table(["클라이언트", "복사할 것", "붙여 넣을 위치"], [
-    ["Claude Code", "claude/skills/commander-mcp/", "%USERPROFILE%\\.claude\\skills\\commander-mcp\\"],
-    ["Cursor", "cursor/skills/commander-mcp/\ncursor/rules/commander-mcp.mdc", "%USERPROFILE%\\.cursor\\skills\\commander-mcp\\\n%USERPROFILE%\\.cursor\\rules\\"],
-    ["VS Code + Copilot", "vscode/instructions/commander-mcp.instructions.md", "프로젝트 폴더의 .github/instructions/"],
-  ].map((r) => r.map((c) => c.split("\n"))), [1900, 3700, W - 5600], { boldFirst: true }),
+  H2("2.3  스킬팩 설치 (VS Code용)"),
+  P("Tricentis가 공개한 commander-mcp 스킬팩은 AI에게 Commander MCP를 다루는 규칙을 알려 줍니다. 체크아웃과 저장 순서, Data Integrity 도구를 쓰기 전에 할 일, 실행은 한 번에 하나 같은 내용입니다. MCP 연결과는 별개이고, 스킬팩 안내서는 둘 다 있어야 자동화가 된다고 설명합니다."),
+  P("VS Code용은 프로젝트 폴더에만 설치됩니다(사용자 전체 설치는 지원하지 않음). 실습 때 VS Code에서 여는 폴더에 설치합니다."),
+  label("Git과 PowerShell을 쓸 수 있을 때"),
+  codeBlock(K.vscode.install),
+  P([run("-ProjectPath", { mono: true, size: 17, color: COL.petrol }), run(" 값은 VS Code로 열 폴더 경로로 바꿉니다.")], { before: 80 }),
+  label("스크립트 실행이 막혀 있을 때 (파일 복사)"),
+  table(["복사할 파일 (스킬팩 폴더 기준)", "붙여 넣을 위치 (프로젝트 폴더 기준)", "참고"], K.vscode.installFiles, [3700, 3500, W - 7200], { monoCols: [0, 1] }),
   gap(),
-  P([run("설치 확인  ", { bold: true }), run("Claude Code와 Cursor는 /commander-mcp 스킬이 목록에 보이는지, VS Code는 .github/instructions/commander-mcp.instructions.md 파일이 생겼는지 확인합니다. 그다음 Lab 0의 워크스페이스 정보 요청이 성공하면 됩니다.")]),
-  P([run("VS Code와 Claude Desktop  ", { bold: true }), run("VS Code에는 짧은 지침 파일만 설치되고 워크플로 문서는 들어가지 않습니다. Claude Desktop은 스킬팩 설치 안내에 없으므로 사내 Claude 관리자에게 스킬 배포 방법을 확인합니다. 두 경우 모두 5장 T00 공통 머리말을 꼭 붙여 넣어 규칙을 직접 알려 주세요.")]),
+  P([run("설치 확인  ", { bold: true }), run("VS Code에서 Open Customizations를 열어 지침 파일이 목록에 있는지 봅니다. Copilot 답변의 References를 펼쳤을 때 copilot-instructions.md가 보이면 지침이 쓰인 것입니다.")]),
+  P([run("VS Code용 팩의 한계  ", { bold: true }), run("VS Code용 팩은 짧은 지침 파일만 설치하고, 공식 워크플로 문서 18종은 넣지 않습니다. 그래서 새 채팅을 열 때마다 5장 T00 공통 머리말을 먼저 붙여 넣어 규칙을 직접 알려 줍니다.")]),
   muted("스킬팩은 Apache 2.0 오픈소스로 제공되며 Tricentis 제품 지원 계약 범위 밖입니다. 문제는 GitHub Issues로 제보합니다."),
 
-  H2("2.4  실습 환경"),
-  P([run("대상 앱  ", { bold: true }), run("Tricentis Demo Web Shop  "), mono(K.meta.app)]),
-  P("테스트 연습용으로 공개된 쇼핑몰 사이트입니다. 실습에 쓰는 모듈은 강사가 미리 XScan으로 스캔해 워크스페이스에 넣어 두었습니다."),
-  table(["모듈", "위치", "주요 속성", "설명"], K.practiceModules.map((m) => [m.module, m.where, m.attrs, m.note]), [1500, 2000, 2900, W - 6400], { boldFirst: true }),
-  muted("표준 모듈(OpenUrl, CloseBrowser)의 폴더 위치와 속성 이름은 Tosca 버전에 따라 조금 다를 수 있습니다. 강사가 실습 전에 확인해 둡니다.", { before: 60 }),
+  H2("2.4  도구 실행 확인과 승인"),
+  P("Copilot은 도구를 쓰기 전에 확인 창을 띄웁니다. 도구 이름과 입력값을 펼쳐 읽고 허용합니다. 허용 범위는 한 번, 이 세션, 이 워크스페이스, 항상 중에서 고를 수 있습니다. 실습에서는 아래 기준을 따릅니다."),
+  table(["묶음", "도구 예", "허용 방법"], K.approvals, [1800, 4300, W - 6100], { boldFirst: true, monoCols: [1] }),
+  gap(),
+  bullets([
+    "권한 수준은 기본값인 Manual permissions를 그대로 둡니다. Allow all과 Autopilot은 확인 없이 실행하므로 실습에서 쓰지 않습니다.",
+    "허용을 잘못 눌렀으면 명령 팔레트에서 Chat: Reset Tool Confirmations를 실행합니다. 도구별 허용 상태는 Chat: Manage Tool Approval에서 봅니다.",
+    "서버 로그는 MCP: List Servers → tosca-commander → Show Output에서 봅니다.",
+  ]),
+
+  H2("2.5  실습 환경"),
+  muted("강사가 실습 내용에 맞게 채웁니다.", { after: 100 }),
+  table(["항목", "내용"], [
+    ["대상 앱", "[앱 이름과 주소]"],
+    ["워크스페이스", "[워크스페이스 이름, 싱글 / 멀티 유저]"],
+    ["실습 폴더", "[테스트케이스를 만들 폴더 경로]"],
+    ["준비한 모듈 폴더", "[모듈 폴더 경로]"],
+  ], [2600, W - 2600], { boldFirst: true }),
+  gap(),
+  label("미리 준비한 모듈"),
+  table(["모듈", "위치", "주요 속성", "설명"], [1, 2, 3].map(() => ["[모듈 이름]", "[위치]", "[속성]", "[설명]"]), [1900, 2300, 2700, W - 6900], { boldFirst: true }),
+  muted("모듈은 강사가 미리 XScan으로 스캔해 둡니다. Copilot은 화면을 스캔해 UI 모듈을 만들지 못합니다.", { before: 60 }),
   gap(),
   label("실습 계정"),
-  P("이메일은 강사가 나눠 줍니다. 비밀번호는 AI에게 보내지 않도록 강사가 TestCases/MCP실습 폴더에 DWS_Password라는 TCP(Test Configuration Parameter)로 넣어 두었습니다. 프롬프트에는 비밀번호 대신 참조 {CP[DWS_Password]}만 적습니다."),
-  recordTable(["실습 이메일"]),
+  P("비밀번호는 Copilot에게 보내지 않습니다. 강사가 TCP(Test Configuration Parameter)로 넣어 두고, 프롬프트에는 참조 {CP[이름]}만 적습니다."),
+  recordTable(["실습 계정", "비밀번호 TCP 이름"]),
 );
 
-// 3장
+// 3장 (실습 내용은 강사가 채우는 틀)
+const labRows = [];
+K.labs.forEach((L, i) => {
+  labRows.push([L.id, L.title, L.time, "[조회 / 생성 / 수정 / 실행 / 저장]"]);
+  if (i + 1 === K.BREAK_AFTER) labRows.push(["휴식", "", "10분", ""]);
+});
 add(
   H1("3장  실습"),
-  P("Lab 0부터 순서대로 진행합니다. 앞 Lab의 결과를 뒤 Lab에서 쓰므로 건너뛰지 않습니다. 모든 프롬프트에서 [내 이름], [실습 이메일]은 자기 값으로 바꿉니다. 비밀번호는 프롬프트에 쓰지 않습니다(2.4 참고)."),
-  table(["Lab", "내용", "시간", "워크스페이스 변화"], [
-    ["Lab 0", "연결 확인", "10분", "없음 (조회)"],
-    ["Lab 1", "워크스페이스 둘러보기", "10분", "없음 (조회)"],
-    ["Lab 2", "수동 테스트케이스 만들기", "15분", "테스트케이스 생성 (만들 때 바로 저장)"],
-    ["Lab 3", "자동 테스트케이스 만들기", "25분", "테스트케이스 생성 (만들 때 바로 저장)"],
-    ["휴식", "", "10분", ""],
-    ["Lab 4", "ScratchBook 검증 실행과 수정", "20분", "값 수정 (저장 필요), 실행"],
-    ["Lab 5", "저장과 정리", "10분", "저장"],
-  ], [1200, 4238, 1400, 2800], { boldFirst: true }),
+  P("[실습 소개: 무엇을 만드는지, 어떤 순서로 진행하는지, 앞 Lab 결과를 뒤에서 쓰는지]"),
+  P("모든 프롬프트의 [ ] 부분은 자기 값으로 바꿉니다. 비밀번호는 프롬프트에 쓰지 않습니다(2.5 참고). 처음부터 끝까지 VS Code의 한 채팅 세션에서 진행합니다."),
+  table(["Lab", "내용", "시간", "워크스페이스 변화"], labRows, [1200, 4238, 1400, 2800], { boldFirst: true }),
 );
 K.labs.forEach((L, idx) => {
   add(
@@ -322,33 +330,15 @@ K.labs.forEach((L, idx) => {
     P([run("목표  ", { bold: true, color: COL.petrol }), run(L.goal)]),
     label("준비"),
     L.before.length > 1 ? numbered(L.before) : P(L.before[0]),
+    label("진행 순서"),
+    numbered(L.steps),
   );
   L.prompts.forEach((p) => add(gap(60), promptBox(`프롬프트 ${p.label}`, p.text)));
   add(
     gap(60),
-    P([run("AI가 주로 쓰는 도구  ", { bold: true, color: COL.petrol }), ...L.tools.flatMap((t, i) => [mono(t), run(i < L.tools.length - 1 ? ", " : "")])], { before: 100 }),
-  );
-  if (L.id === "Lab 0") {
-    add(
-      label("화면 예시 (프롬프트 0-2)"),
-      promptBox("AI 응답 예시", "[get_workspace_info 실행]\n현재 열린 워크스페이스입니다.\n· 이름: MCP_Training_홍길동\n· 경로: C:\\Tosca_Projects\\Tosca_Workspaces\\MCP_Training_홍길동\n· 모드: single (싱글 유저)\n체크인 없이 저장만 하면 됩니다.", { fill: COL.tint, border: COL.line, highlight: false }),
-      muted("실제 문구와 모양은 클라이언트마다 다릅니다. 응답에 도구 이름이 보이면 MCP로 Commander를 실제로 읽은 것입니다.", { before: 60 }),
-    );
-  }
-  if (L.id === "Lab 3") {
-    add(
-      label("기대 결과 (계획 표)"),
-      table(["#", "모듈", "속성", "값", "ActionMode"], K.lab3Steps, [500, 1700, 1500, 4038, 1900], { monoCols: [3] }),
-      muted("맞는 모듈을 못 찾았다는 스텝이 있으면, 그 화면은 사람이 XScan으로 스캔한 뒤 같은 프롬프트로 다시 요청합니다.", { before: 60 }),
-    );
-  }
-  if (L.id === "Lab 4") {
-    add(
-      label("일부러 실패를 만드는 이유"),
-      P("실무에서 AI에게 가장 많이 맡기는 일 중 하나가 실패 원인 분석입니다. 원인을 미리 알고 있는 실패를 만들어 보면, AI의 설명이 맞는지 직접 확인할 수 있습니다. 4-3에서 '아직 고치지는 마'라고 적는 이유도 같습니다. 분석과 수정을 나눠야 실제 결함을 테스트 수정으로 덮는 일을 막을 수 있습니다."),
-    );
-  }
-  add(
+    P([run("AI가 주로 쓰는 도구  ", { bold: true, color: COL.petrol }), run(L.tools.join(", "))], { before: 100 }),
+    label("결과 예시"),
+    blankBox(1800, "[결과 화면 캡처나 Copilot 응답 예시]"),
     label("확인 포인트"),
     checks(L.checks),
     label("결과 기록"),
@@ -356,15 +346,6 @@ K.labs.forEach((L, idx) => {
     label("막히면"),
     table(["증상", "해결 방법"], L.stuck, [2800, W - 2800], { boldFirst: true, zebra: false }),
   );
-  if (L.id === "Lab 4") {
-    add(label("메모 (실행하면서 눈에 띈 것)"), blankBox(2200, "예: 브라우저가 열리는 데 걸린 시간, AI가 결과를 보고하기까지 몇 번 상태를 확인했는지"));
-  }
-  if (L.id === "Lab 3") {
-    add(
-      label("추가 과제 (빨리 끝났다면)"),
-      P("5장의 T07 템플릿으로 '로그인 성공_자동'을 설명해 달라고 요청해 보세요. AI의 설명이 내가 만든 테스트케이스와 같은지 비교합니다."),
-    );
-  }
 });
 
 // 4장
@@ -377,11 +358,11 @@ add(
   P("6번 중 API 모듈 만들기는 대응하는 공식 워크플로가 없어 템플릿이 없습니다. 4.3의 네 요소로 직접 씁니다. 예를 들면 다음과 같습니다."),
   promptBox("API 모듈 프롬프트 예", "API 연결 목록을 먼저 보여줘. 그다음 [연결 이름]으로 [엔드포인트 경로]에 GET 요청을 보내는 API 모듈을 [모듈 폴더 경로]에 만들 계획을 보여줘.\n만들고 나면 실제 응답 상태 코드와 응답 본문 일부를 알려줘. 인증 정보는 내가 직접 넣을 테니 묻지 마."),
   H2("4.2  프롬프트 문장이 도구 입력이 되는 과정"),
-  P("AI는 프롬프트를 읽고 도구에 넣을 값을 뽑아냅니다. Lab 3의 프롬프트를 예로 들면 다음과 같습니다."),
+  P("AI는 프롬프트를 읽고 도구에 넣을 값을 뽑아냅니다. 슬라이드에서 본 예시 프롬프트로 보면 다음과 같습니다."),
   table(["프롬프트 속 표현", "AI가 쓰는 도구", "들어가는 입력"], [
-    ["Modules/MCP실습에서만 찾아", "list_assets", "assetType = XModule, root = Modules/MCP실습"],
+    ["Modules/회원에서만 찾아", "list_assets", "assetType = XModule, root = Modules/회원"],
     ["(AI가 스스로 판단)", "get_object_info", "찾은 모듈의 속성 확인"],
-    ["TestCases/MCP실습/홍길동 폴더에 '로그인 성공_자동'", "create_test_cases", "path, name, test_steps"],
+    ["TestCases/회원/홍길동 폴더에 '로그인 성공_자동'", "create_test_cases", "path, name, test_steps"],
     ["Account가 같은지 Verify", "set_attribute", "ActionMode = Verify"],
   ], [3400, 2200, W - 5600], { monoCols: [1] }),
   gap(),
@@ -391,7 +372,7 @@ add(
   P("Tricentis는 MCP 프롬프트를 쓸 때 구체적으로 쓰고, 프로젝트·폴더·테스트케이스 이름 같은 맥락을 주고, 요청을 단계로 나누라고 권합니다. 이 워크북에서는 이를 대상, 작업, 조건, 확인 네 가지로 정리했습니다."),
   table(["요소", "질문", "적을 내용", "예"], K.promptElements.map((e) => [e.key, e.q, e.desc, e.ex]), [900, 1300, 4038, 3400], { boldFirst: true }),
   gap(),
-  promptBox("네 요소를 모두 넣은 예", "[대상] TestCases/MCP실습/홍길동 폴더에 [작업] '로그인 성공_자동' 테스트케이스를 만들어줘.\n[조건] 모듈은 Modules/MCP실습에서만 찾고 새로 스캔하지 마. [확인] 만들기 전에 스텝 계획을 표로 보여줘."),
+  promptBox("네 요소를 모두 넣은 예", "[대상] TestCases/회원/홍길동 폴더에 [작업] '로그인 성공_자동' 테스트케이스를 만들어줘.\n[조건] 모듈은 Modules/회원에서만 찾고 새로 스캔하지 마. [확인] 만들기 전에 스텝 계획을 표로 보여줘."),
 
   H2("4.4  프롬프트 작성 요령 일곱 가지"),
   numbered(K.tips.map((t) => [run(t[0] + "  ", { bold: true }), run(t[1])])),
@@ -418,10 +399,10 @@ exercises.forEach((e) => add(
 add(
   H1("5장  프롬프트 템플릿"),
   P("Tricentis가 공개한 commander-mcp 스킬팩 1.2.1에는 AI가 따라 하는 워크플로 템플릿 18종이 들어 있습니다. 이것은 AI용입니다. 이 장의 T00~T18은 이 과정에서 그 18종에 하나씩 맞춰 만든 사람용 프롬프트 템플릿입니다. 번호는 대응 관계를 찾기 쉽게 공식 워크플로 목록(reference/workflows-index.md) 순서를 따랐습니다."),
-  P("스킬팩이 설치돼 있으면 AI는 요청 내용에 맞는 공식 워크플로를 골라 순서대로 따릅니다. 템플릿은 그 워크플로에 필요한 정보(경로, 범위, 값, 확인 방식)를 빠짐없이 넘겨주는 역할을 합니다. 사내에서 만든 템플릿이 있다면 같은 형식(언제 쓰나, 본문, 예시, 도구, 확인할 점)으로 이 장에 추가합니다."),
+  P("VS Code용 스킬팩은 짧은 지침 파일만 설치하고 이 워크플로 문서는 넣지 않습니다. 그래서 각 템플릿에 범위, 확인 방식, 하지 말 일을 문장으로 직접 넣었습니다. 템플릿을 쓰면 워크플로가 요구하는 정보(경로, 범위, 값, 확인 방식)가 빠지지 않습니다. 사내에서 만든 템플릿이 있다면 같은 형식(언제 쓰나, 본문, 예시, 도구, 확인할 점)으로 이 장에 추가합니다."),
   H2("5.1  템플릿 쓰는 순서"),
   numbered([
-    "대화를 시작할 때 T00 공통 머리말을 한 번 붙여 넣습니다.",
+    "새 채팅을 시작할 때 T00 공통 머리말을 한 번 붙여 넣습니다.",
     "아래 목록에서 하려는 일과 맞는 템플릿을 고릅니다.",
     "빨간색 [ ] 부분을 채웁니다. 경로와 이름은 Commander에 보이는 그대로 적습니다.",
     "AI가 보여 주는 계획에서 대상, 모듈, 값이 맞는지 보고 승인합니다.",
@@ -474,7 +455,7 @@ add(
   H1("부록 B  문제 해결", false),
   table(["증상", "흔한 원인", "해결"], K.troubleshooting, [2600, 3000, W - 5600], { boldFirst: true }),
   gap(),
-  P("그래도 해결되지 않으면 AI에게 받은 응답을 그대로 복사해 강사에게 보여 주세요. 어떤 도구가 어떤 오류를 냈는지가 원인을 찾는 가장 빠른 단서입니다."),
+  P("그래도 해결되지 않으면 Copilot에게 받은 응답을 그대로 복사해 강사에게 보여 주세요. 어떤 도구가 어떤 오류를 냈는지가 원인을 찾는 가장 빠른 단서입니다."),
 
   H1("부록 C  예시 답안", false),
   H2("C.1  확인 문제"),
@@ -487,18 +468,18 @@ add(
   H2("C.2  고쳐 쓰기 연습"),
   muted("정답은 하나가 아닙니다. 대상, 작업, 조건, 확인이 다 들어 있으면 됩니다.", { after: 100 }),
   P([run("연습 1", { bold: true, color: COL.petrol })], { after: 60, keepNext: true }),
-  promptBox("예시", "TestCases/MCP실습/[내 이름] 폴더에 '회원가입_정상_자동' 자동화 테스트케이스를 만들려고 해. 아직 만들지 말고 계획만 보여줘.\n모듈은 Modules/MCP실습에서만 찾고 새로 스캔하지 마. 시나리오는 [단계]이고, 가입 완료 문구를 Verify 해줘.\n맞는 모듈이 없는 스텝은 따로 표시해줘."),
-  muted("실습 워크스페이스에는 회원가입 화면 모듈이 없으므로, AI가 '맞는 모듈 없음'을 보고하는 것이 정상입니다.", { before: 60, after: 160 }),
+  promptBox("예시", "TestCases/회원/[내 이름] 폴더에 '회원가입_정상_자동' 자동화 테스트케이스를 만들려고 해. 아직 만들지 말고 계획만 보여줘.\n모듈은 Modules/회원에서만 찾고 새로 스캔하지 마. 시나리오는 [단계]이고, 가입 완료 문구를 Verify 해줘.\n맞는 모듈이 없는 스텝은 따로 표시해줘."),
+  muted("모듈 폴더에 회원가입 화면 모듈이 없으면 AI가 '맞는 모듈 없음'을 보고합니다. 그 화면은 먼저 XScan으로 스캔합니다.", { before: 60, after: 160 }),
   P([run("연습 2", { bold: true, color: COL.petrol })], { after: 60, keepNext: true }),
   promptBox("예시", "Execution/[ExecutionList 이름]의 마지막 실행 결과를 보여줘. 통과/실패/미실행 개수를 먼저 알려 주고,\n실패한 테스트케이스는 실패 스텝과 메시지를 표로 정리해줘. 수정은 하지 마."),
   gap(160),
   P([run("연습 3", { bold: true, color: COL.petrol })], { after: 60, keepNext: true }),
-  promptBox("예시", "TestCases/MCP실습/[내 이름] 폴더의 테스트케이스 이름을 '[화면]_[시나리오]_[수동/자동]' 규칙으로 바꾸려고 해.\n바꿀 이름을 현재 이름과 나란히 표로 먼저 보여줘. 내가 확인하면 그때 바꿔줘. 이름은 속성 변경(set_attribute)으로 바꿔."),
+  promptBox("예시", "TestCases/회원/[내 이름] 폴더의 테스트케이스 이름을 '[화면]_[시나리오]_[수동/자동]' 규칙으로 바꾸려고 해.\n바꿀 이름을 현재 이름과 나란히 표로 먼저 보여줘. 내가 확인하면 그때 바꿔줘. 이름은 속성 변경(set_attribute)으로 바꿔."),
 
   H1("부록 D  참고 자료", false),
   table(["자료", "주소"], K.references, [4200, W - 4200], { monoCols: [1] }),
   gap(),
-  muted("이 워크북의 도구 목록과 워크플로 이름은 2026년 10월 기준 commander-mcp 스킬팩 1.2.1을 따릅니다. 스킬팩이 갱신되면 5장 템플릿 목록과 부록 A를 함께 고칩니다."),
+  muted("이 워크북의 도구 목록과 워크플로 이름은 2026년 10월 기준 commander-mcp 스킬팩 1.2.1을, VS Code 메뉴 이름은 2026년 10월 VS Code 문서를 따릅니다. 스킬팩이나 VS Code가 바뀌면 2장, 5장, 부록 A를 함께 고칩니다."),
 );
 
 // ---------- 문서 ----------

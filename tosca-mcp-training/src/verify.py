@@ -4,9 +4,10 @@ python3 verify.py <deck.pptx> <workbook.docx> <commander-mcp 스킬 폴더>
 
 1. 도구 이름과 워크플로 파일 이름이 공식 스킬팩에 실제로 있는지
 2. 도구 32종, 템플릿 18종 같은 개수가 맞는지
-3. 실습 프롬프트가 슬라이드와 워크북에 똑같이 들어 있는지
-4. 슬라이드마다 발표자 노트가 있는지
-5. 이모지, 줄표(—), 과장된 표현 같은 기계적으로 쓴 티가 나는 표현이 없는지
+3. 템플릿 문구가 슬라이드와 워크북에 똑같이 들어 있는지, 실습 틀이 양쪽에 다 있는지
+4. 클라이언트 내용이 VS Code + GitHub Copilot만 남았는지, 실습 내용이 비어 있는지
+5. 슬라이드마다 발표자 노트가 있는지
+6. 이모지, 줄표(—), 과장된 표현 같은 기계적으로 쓴 티가 나는 표현이 없는지
 """
 import json
 import os
@@ -81,26 +82,32 @@ groups = {}
 for t in content["templates"]:
     groups[t["group"]] = groups.get(t["group"], 0) + 1
 check(groups == {"조회": 2, "작성": 4, "편집": 1, "실행·분석": 7, "관리": 2, "확장": 2}, f"템플릿 묶음별 개수 {groups}")
-check(len(content["labs"]) == 6, "Lab 0~5 여섯 개")
+check(len(content["labs"]) >= 1, f"실습 틀 {len(content['labs'])}개")
 check("도구 32개" in deck_all and "도구 32종" in doc_all, "슬라이드와 워크북 모두 도구 수를 32로 표기")
 
 # ---------- 3. 프롬프트 일관성 ----------
 for lab in content["labs"]:
-    for p in lab["prompts"]:
-        key = norm(p["text"].replace("(멀티 유저일 때) ", ""))
-        in_doc = key in norm(doc_all)
-        in_deck = key in norm(deck_all)
-        check(in_doc, f"워크북에 프롬프트 {p['label']} 원문이 있음")
-        check(in_deck, f"슬라이드에 프롬프트 {p['label']} 원문이 있음")
+    labels = [p["label"] for p in lab["prompts"]]
+    check(all(f"프롬프트 {l}" in doc_all for l in labels) and lab["id"] in doc_all, f"워크북에 {lab['id']} 틀(프롬프트 {', '.join(labels)})이 있음")
+    check(all(f"프롬프트 {l}" in deck_all for l in labels) and f"{lab['id']} |" in deck_all, f"슬라이드에 {lab['id']} 틀(개요, 프롬프트)이 있음")
 for t in [content["preamble"]] + content["templates"]:
     check(norm(t["prompt"]) in norm(doc_all), f"워크북에 {t['id']} 템플릿 본문이 있음")
 t06 = next(t for t in content["templates"] if t["id"] == "T06")
 check(norm(t06["prompt"]) in norm(deck_all), "슬라이드의 T06 본문이 워크북과 같음")
 
-# ---------- 4. 발표자 노트 ----------
+# ---------- 4. 클라이언트 범위와 실습 틀 ----------
+everything = deck_all + doc_all + "".join(slide_notes)
+other_clients = sorted(set(re.findall(r"Cursor|Claude|Windsurf|mcp-remote|claude_desktop", everything)))
+check(not other_clients, "VS Code + GitHub Copilot 외 클라이언트 언급 없음" + (f" {other_clients}" if other_clients else ""))
+for key in ["MCP: Add Server", "Copilot Global", "mcp-config.json", "-Ide VSCode", "Open Customizations", "MCP servers in Copilot", "Manual permissions"]:
+    check(key in deck_all and key in doc_all if key not in ("-Ide VSCode",) else key in doc_all, f"VS Code 설정 항목 '{key}'이 들어 있음")
+leftover = sorted(set(re.findall(r"MCP실습|demowebshop|Demo Web Shop|DWS_Password|로그인 실패_수동", everything)))
+check(not leftover, "예전 실습 내용(Demo Web Shop 시나리오)이 남아 있지 않음" + (f" {leftover}" if leftover else ""))
+
+# ---------- 5. 발표자 노트 ----------
 check(len(slides) == len(slide_notes) and all(len(n) > 40 for n in slide_notes), f"슬라이드 {len(slides)}장 모두 발표자 노트 있음")
 
-# ---------- 5. 표현 점검 ----------
+# ---------- 6. 표현 점검 ----------
 emoji = re.compile("[\U0001F300-\U0001FAFF☀-⛿✀-➿⭐✅]")
 src_all = deck_all + doc_all + "".join(slide_notes)
 found_emoji = sorted(set(c for c in emoji.findall(src_all) if c != "☐"))

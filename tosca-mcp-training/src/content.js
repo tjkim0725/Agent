@@ -5,11 +5,11 @@ const MCP_URL = "http://127.0.0.1:46248/mcp";
 
 const meta = {
   course: "Tosca Commander MCP 입문",
-  subtitle: "AI 어시스턴트로 테스트케이스 만들기",
-  baseline: "Tosca Commander 2026.1 LTS Patch 1 이상 · commander-mcp 스킬팩 1.2.1 기준",
+  subtitle: "VS Code + GitHub Copilot으로 테스트케이스 만들기",
+  baseline: "Tosca Commander 2026.1 LTS Patch 1 이상 · VS Code + GitHub Copilot · commander-mcp 스킬팩 1.2.1 기준",
   duration: "3시간 20분 (휴식 10분 포함)",
   mcpUrl: MCP_URL,
-  app: "https://demowebshop.tricentis.com",
+  client: "VS Code + GitHub Copilot",
 };
 
 // 시간표 (슬라이드 2, 워크북 표지 뒤)
@@ -105,233 +105,68 @@ const toolGroups = [
   },
 ];
 
-// 클라이언트별 연결 설정
-const clients = [
-  {
-    name: "VS Code + GitHub Copilot",
-    where: "프로젝트 폴더의 .vscode/mcp.json",
-    note: "Copilot Chat을 Agent 모드로 바꿔야 도구가 보인다.",
-    code: `{
-  "servers": {
+// VS Code + GitHub Copilot 연결 설정 (VS Code 문서 2026-10 기준)
+const vscode = {
+  steps: [
+    "명령 팔레트(Ctrl+Shift+P)에서 MCP: Add Server를 실행합니다.",
+    "HTTP (HTTP or Server-Sent Events)를 고르고 서버 주소를 넣습니다.",
+    "서버 ID에 tosca-commander를 넣습니다.",
+    "저장 위치는 Global → Copilot Global을 고릅니다.",
+    "채팅 창에서 Agent를 고르고, Open Customizations → Tools에서 tosca-commander 도구가 켜져 있는지 봅니다.",
+  ],
+  configPath: "~/.copilot/mcp-config.json",
+  code: `{
+  "mcpServers": {
     "tosca-commander": {
       "type": "http",
       "url": "${MCP_URL}"
     }
   }
 }`,
-  },
-  {
-    name: "Cursor",
-    where: "Settings → MCP → Add server (또는 .cursor/mcp.json)",
-    note: "서버 이름은 tosca-commander로 맞추면 스킬팩 안내와 같아진다.",
-    code: `{
-  "mcpServers": {
-    "tosca-commander": {
-      "url": "${MCP_URL}"
-    }
-  }
-}`,
-  },
-  {
-    name: "Claude Code",
-    where: "터미널에서 한 번 실행",
-    note: "등록 후 /mcp 명령으로 연결 상태를 볼 수 있다.",
-    code: `claude mcp add --transport http tosca-commander ${MCP_URL}`,
-  },
-  {
-    name: "Claude Desktop",
-    where: "설정 → 개발자 → 구성 편집 (claude_desktop_config.json)",
-    note: "로컬 HTTP 서버를 mcp-remote로 중계한다. Node.js가 설치돼 있어야 한다.",
-    code: `{
-  "mcpServers": {
-    "tosca-commander": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "${MCP_URL}"]
-    }
-  }
-}`,
-  },
+  legacy: "예전 안내에 나오는 .vscode/mcp.json은 servers 키를 쓰고, Copilot 설정 파일(mcp-config.json)은 mcpServers 키를 씁니다. 두 형식을 섞어 쓰지 않습니다.",
+  install: `git clone https://github.com/Tricentis/mcp-skills.git
+cd mcp-skills\\Tosca\\Commander\\MCP
+.\\Install-CommanderMcpPack.ps1 -Ide VSCode -Scope Project -ProjectPath "C:\\work\\tosca-mcp"`,
+  installFiles: [
+    ["vscode/copilot-instructions.md.fragment", ".github/copilot-instructions.md", "파일이 없을 때만 복사. 이미 있으면 내용을 덧붙임"],
+    ["vscode/instructions/commander-mcp.instructions.md", ".github/instructions/commander-mcp.instructions.md", "그대로 복사"],
+    ["vscode/AGENTS.md.fragment", "AGENTS.md (폴더 맨 위)", "설치 스크립트가 없을 때만 만듦"],
+  ],
+};
+
+// 도구 실행 확인 (VS Code 승인 창에서 고를 범위)
+const approvals = [
+  ["조회", "get_workspace_info, get_object_info, list_assets, get_attributes", "이 세션 동안 허용해도 됩니다"],
+  ["만들기·수정", "create_test_cases, set_attribute, execute_drop_task, execute_task", "입력값을 펼쳐 보고 한 번만 허용합니다"],
+  ["실행", "execute_test_suite", "한 번만 허용합니다. 브라우저가 열리면 손을 뗍니다"],
+  ["삭제·체크인", "delete_objects, check_in_all", "대상 목록을 먼저 받아 본 뒤 한 번만 허용합니다"],
 ];
 
-// 실습용으로 강사가 미리 준비하는 모듈
-const practiceModules = [
-  { module: "OpenUrl", where: "표준 모듈", attrs: "Url", note: "브라우저를 열고 주소로 이동" },
-  { module: "Header", where: "Modules/MCP실습", attrs: "Log in, Log out, Account", note: "상단 메뉴. Account는 로그인 후 이메일이 보이는 링크" },
-  { module: "Login", where: "Modules/MCP실습", attrs: "Email, Password, Log in, Error Message", note: "로그인 화면" },
-  { module: "CloseBrowser", where: "표준 모듈", attrs: "Title", note: "브라우저 닫기" },
-];
-
-// Lab 3에서 만들어질 스텝 (기대 결과)
-const lab3Steps = [
-  ["1", "OpenUrl", "Url", "https://demowebshop.tricentis.com", "Input"],
-  ["2", "Header", "Log in", "{CLICK}", "Input"],
-  ["3", "Login", "Email", "[실습 이메일]", "Input"],
-  ["", "Login", "Password", "{CP[DWS_Password]}", "Input"],
-  ["", "Login", "Log in", "{CLICK}", "Input"],
-  ["4", "Header", "Account", "[실습 이메일]", "Verify"],
-  ["5", "Header", "Log out", "{CLICK}", "Input"],
-  ["6", "CloseBrowser", "Title", "Demo Web Shop*", "Input"],
-];
-
-const labs = [
-  {
-    id: "Lab 0", title: "연결 확인", time: "10분",
-    goal: "AI 어시스턴트가 Commander의 MCP Server에 붙었는지 확인한다.",
-    before: [
-      "Tosca Commander를 실행하고 실습 워크스페이스를 연다.",
-      "AI 클라이언트에 tosca-commander 서버를 등록한다 (2장 참고).",
-      "VS Code라면 Copilot Chat을 Agent 모드로 바꾸고, 도구 목록에 tosca-commander가 켜져 있는지 본다.",
-    ],
+// 실습: 내용은 강사가 채운다. 아래는 슬라이드와 워크북에 들어갈 틀이다.
+// 채울 때는 labs 배열에서 labFrame(n) 하나를 같은 모양의 객체로 바꾼다. 예:
+//   { ...labFrame(1), title: "연결 확인", time: "10분", goal: "...", prompts: [{ label: "1-1", text: "..." }] }
+// Lab 수를 바꾸려면 LAB_COUNT를, 휴식 위치(몇 번째 Lab 뒤)를 바꾸려면 BREAK_AFTER를 고친다.
+const LAB_COUNT = 6;
+const BREAK_AFTER = 3;
+function labFrame(n) {
+  return {
+    id: `Lab ${n}`,
+    title: "[실습 제목]",
+    time: "[ ]분",
+    goal: "[이 Lab에서 할 일을 한 줄로]",
+    before: ["[시작 전에 준비하거나 알려 줄 것]"],
+    steps: ["[진행 순서 1]", "[진행 순서 2]", "[진행 순서 3]"],
     prompts: [
-      { label: "0-1", text: "Tosca Commander MCP에서 쓸 수 있는 도구 목록을 보여줘. 도구 이름과 한 줄 설명을 표로 정리해줘." },
-      { label: "0-2", text: "지금 열려 있는 Tosca 워크스페이스 정보를 알려줘. 이름, 경로, 싱글 유저인지 멀티 유저인지 포함해서." },
+      { label: `${n}-1`, text: "[입력할 프롬프트]" },
+      { label: `${n}-2`, text: "[입력할 프롬프트]" },
     ],
-    tools: ["get_workspace_info"],
-    checks: [
-      "도구 목록에 create_test_cases와 execute_test_suite가 있다",
-      "워크스페이스 이름이 Commander 제목 표시줄과 같다",
-      "모드(single / multi)를 아래 기록란에 적었다",
-    ],
-    record: ["워크스페이스 이름", "모드 (single / multi)", "도구 개수"],
-    stuck: [
-      ["연결 거부, 응답 없음", "Commander가 켜져 있고 워크스페이스가 열려 있는지, 주소의 포트가 46248인지 확인한다. Patch 1이면 Tosca MCP Server Addin이 켜져 있는지도 본다."],
-      ["도구가 하나도 안 보임", "클라이언트에서 서버를 켰는지, VS Code라면 Agent 모드인지 확인한다. 설정을 바꿨다면 클라이언트를 다시 시작한다."],
-    ],
-  },
-  {
-    id: "Lab 1", title: "워크스페이스 둘러보기", time: "10분",
-    goal: "조회만 하는 요청으로 워크스페이스 구조와 실습 모듈을 확인한다.",
-    before: ["이 Lab은 아무것도 바꾸지 않는다. 결과에 나오는 긴 ID(surrogateId)는 몰라도 된다."],
-    prompts: [
-      { label: "1-1", text: "TestCases 폴더 아래 구조를 2단계 깊이까지 트리로 보여줘. 각 항목은 이름과 타입만 표시해줘." },
-      { label: "1-2", text: "Modules/MCP실습 폴더에 있는 모듈(XModule)을 모두 찾아서, 모듈별 속성(ModuleAttribute) 이름을 표로 정리해줘." },
-    ],
-    tools: ["get_object_info", "list_assets", "get_attributes"],
-    checks: [
-      "Header, Login 모듈이 목록에 있다",
-      "Login 모듈에 Email, Password, Log in 속성이 있다",
-      "Commander에서 아무것도 바뀌지 않았다",
-    ],
-    record: ["TestCases 아래 1단계 폴더 수", "Login 모듈 속성 개수"],
-    stuck: [
-      ["MCP실습 폴더가 없다고 함", "Commander 트리에서 실제 폴더 이름을 확인하고, 보이는 그대로 경로를 다시 적는다. 띄어쓰기도 같아야 한다."],
-    ],
-  },
-  {
-    id: "Lab 2", title: "수동 테스트케이스 만들기", time: "15분",
-    goal: "글로 된 테스트 절차를 Tosca 수동 테스트케이스로 옮긴다.",
-    before: ["[내 이름]은 본인 이름으로 바꾼다. 폴더가 없으면 AI가 중간 폴더를 만든다."],
-    prompts: [
-      {
-        label: "2-1",
-        text: `TestCases/MCP실습/[내 이름] 폴더에 '로그인 실패_수동' 수동 테스트케이스를 만들어줘.
-설명: 틀린 비밀번호로 로그인하면 오류 문구가 나오는지 확인한다.
-스텝 (지시 / 기대 결과):
-1. 브라우저에서 https://demowebshop.tricentis.com 에 접속한다 / 메인 화면이 열린다
-2. 상단의 Log in 링크를 클릭한다 / 로그인 화면이 열린다
-3. 실습 계정 이메일과 틀린 비밀번호를 넣고 Log in 버튼을 클릭한다 / 'Login was unsuccessful' 문구가 보인다
-작업 상태(TestCaseWorkState)는 IN_WORK로 해줘. 메뉴 작업 말고 속성 변경(set_attribute)으로 바꿔.
-만들기 전에 어떤 순서로 작업할지 먼저 보여줘.`,
-      },
-      { label: "2-2", text: "좋아, 그 순서대로 진행해줘. 끝나면 만든 테스트케이스의 스텝을 다시 읽어서 보여줘." },
-    ],
-    tools: ["create_test_cases", "list_available_tasks", "execute_task (Manual XTestStep)", "set_attribute", "save_workspace"],
-    checks: [
-      "작업 순서를 먼저 받고 나서 진행을 승인했다",
-      "TestCases/MCP실습/[내 이름] 폴더에 '로그인 실패_수동'이 생겼다",
-      "스텝 3개에 지시와 기대 결과가 모두 들어갔다",
-      "Commander에서 테스트케이스를 직접 열어 확인했다",
-    ],
-    record: ["만든 테스트케이스 경로", "스텝 수"],
-    stuck: [
-      ["기대 결과가 빠짐", "\"3개 스텝 모두 기대 결과를 넣었는지 확인하고, 빠진 것만 채워줘\"라고 다시 요청한다."],
-      ["Commander 화면에 대화상자가 뜨고 멈춤", "AI가 작업 상태나 이름을 메뉴 작업으로 바꾸려 한 경우다. 대화상자를 닫고 \"작업 상태와 이름은 속성 변경(set_attribute)으로 해줘\"라고 지시한다."],
-    ],
-  },
-  {
-    id: "Lab 3", title: "자동 테스트케이스 만들기", time: "25분",
-    goal: "기존 모듈을 재사용해 로그인 자동화 테스트케이스를 만든다. 계획을 먼저 받고 승인하는 흐름을 익힌다.",
-    before: [
-      "[실습 이메일]은 강사가 나눠 준 계정 이메일로 바꾼다.",
-      "비밀번호는 AI에게 보내지 않는다. 강사가 TestCases/MCP실습 폴더에 DWS_Password라는 TCP로 넣어 두었으므로, 프롬프트에는 참조 {CP[DWS_Password]}만 적는다.",
-    ],
-    prompts: [
-      {
-        label: "3-1",
-        text: `TestCases/MCP실습/[내 이름] 폴더에 '로그인 성공_자동' 자동화 테스트케이스를 만들려고 해. 아직 만들지 말고 계획만 보여줘.
-- 모듈은 Modules/MCP실습 폴더와 표준 모듈(OpenUrl, CloseBrowser)에서만 찾아. 새로 스캔하지 마.
-- 시나리오:
-  1. https://demowebshop.tricentis.com 열기
-  2. Header 모듈의 Log in 클릭
-  3. Login 모듈에 Email [실습 이메일], Password {CP[DWS_Password]} 입력 후 Log in 클릭
-  4. Header 모듈의 Account 값이 [실습 이메일]과 같은지 Verify
-  5. Log out 클릭 후 브라우저 닫기
-- 스텝별로 모듈, 속성, 값, ActionMode를 표로 보여주고, 맞는 모듈을 못 찾은 스텝은 따로 표시해줘.`,
-      },
-      { label: "3-2", text: "계획대로 만들어줘. 다 만들면 테스트케이스의 스텝 구조를 다시 읽어서 표로 보여줘." },
-    ],
-    tools: ["list_assets", "get_object_info", "create_test_cases", "set_attribute"],
-    checks: [
-      "계획 표를 먼저 받았고, 모든 스텝에 모듈이 매칭됐다",
-      "4번 스텝(Account)의 ActionMode가 Verify다",
-      "Password 값이 {CP[DWS_Password]} 참조로 들어갔다 (실제 비밀번호가 아님)",
-      "결과 표가 계획 표(기대 스텝)와 같다",
-      "Commander에서 스텝과 값을 직접 확인했다",
-    ],
-    record: ["만든 테스트케이스 경로", "계획과 달라진 부분"],
-    stuck: [
-      ["모듈을 못 찾았다고 함", "모듈 폴더 경로를 다시 확인해 준다. 정말 없는 모듈이면 AI는 만들 수 없다. 사람이 XScan으로 스캔한 뒤 다시 요청한다."],
-      ["값이 엉뚱한 속성에 들어감", "\"3번 스텝의 Email 값만 [실습 이메일]로 고쳐줘\"처럼 스텝 번호와 속성을 짚어서 고친다."],
-      ["두세 번 고쳐도 계속 틀림", "강사가 준비한 완성본 TestCases/MCP실습/_완성본/로그인 성공_자동을 내 폴더로 복사해 Lab 4를 진행한다."],
-    ],
-  },
-  {
-    id: "Lab 4", title: "ScratchBook 검증 실행과 수정", time: "20분",
-    goal: "만든 테스트케이스를 검증 실행하고, 일부러 낸 실패를 AI와 함께 분석해서 고친다.",
-    before: [
-      "실행이 시작되면 브라우저가 열린다. 끝날 때까지 마우스와 키보드를 건드리지 않는다.",
-      "실행은 한 번에 하나만 된다. 앞 실행이 끝나기 전에 다음 요청을 보내지 않는다.",
-      "실행은 저장된 상태로 돈다. 값을 바꾼 뒤 저장하지 않으면 바뀐 값이 실행에 들어가지 않는다.",
-    ],
-    prompts: [
-      { label: "4-1", text: "워크스페이스를 저장한 다음 '로그인 성공_자동' 테스트케이스를 ScratchBook에서 검증 실행해줘. 끝나면 스텝별 통과/실패를 표로 보여줘." },
-      { label: "4-2", text: "같은 테스트케이스에서 Account의 Verify 값을 wrong@example.com 으로 바꾸고, 저장한 다음 다시 검증 실행해줘." },
-      { label: "4-3", text: "실패한 스텝과 메시지를 알려줘. 원인이 테스트 데이터 문제인지 애플리케이션 문제인지 근거와 함께 설명해줘. 아직 고치지는 마." },
-      { label: "4-4", text: "Verify 값을 원래 [실습 이메일]로 되돌리고, 저장한 다음 다시 검증 실행해줘. 통과하면 결과 표를 보여줘." },
-    ],
-    tools: ["save_workspace", "execute_test_suite (is_validation_run=true)", "execute_test_suite_status", "set_attribute"],
-    checks: [
-      "4-1 실행이 모두 통과했다",
-      "4-2 실행에서 Account 검증 스텝이 실패했다",
-      "AI가 원인을 기대값(테스트 데이터) 문제로 설명했다",
-      "4-4 실행이 다시 통과했다",
-    ],
-    record: ["1차 실행 결과", "2차 실행에서 실패한 스텝", "3차 실행 결과"],
-    stuck: [
-      ["\"another run in progress\" 같은 메시지", "앞 실행이 아직 안 끝났다. 기다렸다가 \"이전 실행 결과를 먼저 보여줘\"라고 요청한다."],
-      ["응답이 끊기거나 시간 초과", "다시 실행하지 않는다. Commander 쪽 실행은 계속되고 있을 수 있다. 잠시 뒤 결과만 다시 물어본다."],
-    ],
-  },
-  {
-    id: "Lab 5", title: "저장과 정리", time: "10분",
-    goal: "작업 결과를 저장하고, 멀티 유저 환경에서는 무엇이 더 필요한지 확인한다.",
-    before: ["Lab 2, Lab 3에서 만든 테스트케이스는 만들 때 이미 저장됐다. 저장이 필요한 것은 Lab 4처럼 값을 바꾼 경우다.", "AI가 오늘 바꾼 것을 기억하려면 Lab 0부터 같은 대화창을 써야 한다. 새 대화를 열었다면 경로를 직접 알려 준다.", "오늘 실습 워크스페이스는 싱글 유저다. 5-2는 멀티 유저일 때 쓰는 문장으로 읽기만 한다."],
-    prompts: [
-      { label: "5-1", text: "오늘 만들거나 바꾼 객체를 경로와 함께 표로 정리하고, 워크스페이스를 저장해줘." },
-      { label: "5-2", text: "(멀티 유저일 때) 이번 대화에서 체크아웃하거나 바꾼 객체 목록을 먼저 보여줘. 체크인은 내가 체크아웃한 객체 전부에 적용되니까, 내가 목록을 확인하면 저장하고 체크인해줘. 체크인 코멘트는 'MCP 실습: 로그인 테스트 추가'로 남겨줘." },
-    ],
-    tools: ["save_workspace", "check_in_all (멀티 유저)", "update_all (멀티 유저)"],
-    checks: [
-      "저장 완료 응답을 받았다",
-      "정리된 표에 Lab 2, Lab 3에서 만든 테스트케이스가 있다",
-      "Commander를 닫았다가 다시 열어도 테스트케이스가 남아 있다",
-    ],
-    record: ["저장한 시각", "정리된 객체 수"],
-    stuck: [
-      ["check_in_all이 오류를 냄", "싱글 유저 워크스페이스에서는 체크인이 없다. 저장(save_workspace)만 하면 된다."],
-    ],
-  },
-];
+    tools: ["[AI가 쓰는 도구]"],
+    checks: ["[확인할 것]", "[확인할 것]", "[확인할 것]"],
+    record: ["[기록할 항목]", "[기록할 항목]"],
+    stuck: [["[자주 생기는 문제]", "[해결 방법]"]],
+  };
+}
+const labs = Array.from({ length: LAB_COUNT }, (_, i) => labFrame(i + 1));
 
 // AI에게 맡기지 않는 일 (슬라이드 11, 워크북 1.4)
 const notForAI = [
@@ -346,11 +181,13 @@ const notForAI = [
 // 문제 해결 (부록 B, 슬라이드 22)
 const troubleshooting = [
   ["연결 거부, 서버 응답 없음", "Commander가 꺼져 있거나 워크스페이스가 닫혀 있음", "Commander 실행 → 워크스페이스 열기 → 포트 46248 확인 (디버그 빌드는 8080, 직접 바꿨다면 그 값)"],
-  ["도구 목록이 비어 있음", "클라이언트에서 서버가 꺼져 있음", "서버 활성화, VS Code는 Agent 모드, 설정 저장 후 클라이언트 재시작"],
+  ["tosca-commander 도구가 안 보임", "서버가 멈춰 있거나 꺼져 있음, 또는 Agent가 아닌 모드", "MCP: List Servers → tosca-commander → Start Server. 채팅 창에서 Agent를 고르고 Open Customizations → Tools에서 도구를 켬"],
+  ["서버가 시작되지 않음", "주소 오타, 설정 파일 형식 오류", "MCP: List Servers → tosca-commander → Show Output으로 로그 확인. mcp-config.json은 mcpServers 키, .vscode/mcp.json은 servers 키"],
+  ["MCP 서버를 쓸 수 없다는 안내", "회사 Copilot 정책에서 MCP가 꺼져 있음 ('MCP servers in Copilot'은 기본값이 꺼짐)", "Copilot 관리자에게 정책 허용을 요청. 내 PC 설정으로는 바꿀 수 없음"],
   ["\"Unknown task ...\" 응답", "작업 이름이 현재 메뉴 목록에 없음. 이름이 다르거나, 멀티 유저에서 체크아웃 전", "\"작업 목록을 다시 보고 정확한 이름으로 실행해줘\". 멀티 유저라면 대상을 먼저 Checkout (자식 생성·삭제는 상위 폴더)"],
   ["모듈을 못 찾음", "모듈 위치를 모르거나 실제로 모듈이 없음", "모듈 폴더 경로를 알려 준다. 없으면 XScan으로 스캔 후 재요청"],
-  ["Commander가 대화상자를 띄우고 멈춤", "이름·설명·작업 상태 변경을 메뉴 작업으로 실행함", "대화상자 닫기 → \"속성 변경(set_attribute)으로 해줘\". 스킬팩 설치로 예방"],
-  ["실행 결과가 안 돌아옴, 시간 초과", "실행이 길어 클라이언트 요청 시간이 지남", "재실행하지 말고 \"마지막 실행 결과를 확인해줘\""],
+  ["Commander가 대화상자를 띄우고 멈춤", "이름·설명·작업 상태 변경을 메뉴 작업으로 실행함", "대화상자 닫기 → \"속성 변경(set_attribute)으로 해줘\". T00 규칙 5로 예방"],
+  ["실행 결과가 안 돌아옴, 시간 초과", "실행이 길어 요청 시간이 지남", "재실행하지 말고 \"마지막 실행 결과를 확인해줘\""],
   ["다른 실행이 진행 중이라는 메시지", "실행은 워크스페이스 전체에서 한 번에 하나", "앞 실행이 끝난 뒤 요청"],
   ["바꾼 내용이 사라짐, 실행에 안 들어감", "값을 바꾼 뒤 저장하지 않음 (실행도 저장된 상태로 돈다)", "값을 바꾸면 실행 전과 작업 끝에 저장 요청 (save_workspace)"],
 ];
@@ -396,16 +233,16 @@ const useCases = [
 ];
 
 const promptElements = [
-  { key: "대상", q: "어디서?", desc: "폴더 경로, 테스트케이스 이름, 모듈 위치를 Commander에 보이는 그대로 적는다.", ex: "TestCases/MCP실습/홍길동 폴더에" },
+  { key: "대상", q: "어디서?", desc: "폴더 경로, 테스트케이스 이름, 모듈 위치를 Commander에 보이는 그대로 적는다.", ex: "TestCases/회원/홍길동 폴더에" },
   { key: "작업", q: "무엇을?", desc: "만들기, 고치기, 실행, 분석 중 하나. 한 번에 한 가지만 시킨다.", ex: "'로그인 성공_자동' 테스트케이스를 만들어줘" },
-  { key: "조건", q: "어떻게?", desc: "쓸 모듈 범위, 값, ActionMode, 하지 말아야 할 것을 적는다.", ex: "모듈은 Modules/MCP실습에서만 찾고, 새로 스캔하지 마" },
+  { key: "조건", q: "어떻게?", desc: "쓸 모듈 범위, 값, ActionMode, 하지 말아야 할 것을 적는다.", ex: "모듈은 Modules/회원에서만 찾고, 새로 스캔하지 마" },
   { key: "확인", q: "어떻게 받을까?", desc: "계획 먼저, 표로, 승인 후 실행처럼 결과 받는 방식을 정한다.", ex: "만들기 전에 스텝 계획을 표로 보여줘" },
 ];
 
 const promptPairs = [
   {
     bad: "로그인 테스트 만들어줘",
-    good: "TestCases/MCP실습/홍길동 폴더에 '로그인 성공_자동' 테스트케이스를 만들어줘. 모듈은 Modules/MCP실습에서만 찾고, 만들기 전에 스텝 계획을 표로 보여줘.",
+    good: "TestCases/회원/홍길동 폴더에 '로그인 성공_자동' 테스트케이스를 만들어줘. 모듈은 Modules/회원에서만 찾고, 만들기 전에 스텝 계획을 표로 보여줘.",
     why: "위치와 모듈 범위가 없으면 AI가 아무 폴더에나 만들거나 엉뚱한 모듈을 고른다.",
   },
   {
@@ -421,8 +258,8 @@ const promptPairs = [
 ];
 
 const tips = [
-  ["경로는 보이는 그대로", "TestCases/MCP실습/홍길동처럼 Commander 트리에 보이는 이름 그대로 적는다."],
-  ["모듈 찾을 곳을 정해 준다", "\"Modules/MCP실습에서만\"처럼 범위를 주면 엉뚱한 모듈을 쓰지 않는다."],
+  ["경로는 보이는 그대로", "TestCases/회원/홍길동처럼 Commander 트리에 보이는 이름 그대로 적는다."],
+  ["모듈 찾을 곳을 정해 준다", "\"Modules/회원에서만\"처럼 범위를 주면 엉뚱한 모듈을 쓰지 않는다."],
   ["바꾸는 일은 계획부터", "\"아직 실행하지 말고 계획만 보여줘\"를 붙인다."],
   ["한 번에 한 가지", "만들기, 실행, 분석을 한 문장에 몰아넣지 않는다."],
   ["결과 모양을 정한다", "표, 스텝 번호, 통과/실패처럼 받고 싶은 형식을 적는다."],
@@ -484,9 +321,9 @@ const templates = [
     prompt: `[대상 경로]의 Test Configuration Parameter를 상속된 값까지 먼저 보여줘. 그다음 로컬 TCP를 아래처럼 맞춰줘. 목록에 없는 기존 로컬 값은 [유지/삭제]해줘.
 - [이름]=[값]
 - [이름]=[값]`,
-    example: `TestCases/MCP실습 폴더의 Test Configuration Parameter를 상속된 값까지 먼저 보여줘. 그다음 로컬 TCP를 아래처럼 맞춰줘. 목록에 없는 기존 로컬 값은 유지해줘.
+    example: `TestCases/회원 폴더의 Test Configuration Parameter를 상속된 값까지 먼저 보여줘. 그다음 로컬 TCP를 아래처럼 맞춰줘. 목록에 없는 기존 로컬 값은 유지해줘.
 - Browser=Chrome
-- BaseUrl=https://demowebshop.tricentis.com`,
+- BaseUrl=https://test.shop.example.com`,
     tools: "get_object_info, list_test_configuration_parameters, create_test_configuration_parameters",
     caution: "쓰기 도구는 로컬 TCP 전체를 교체한다. '유지'를 골랐다면 결과 목록에 기존 값이 남아 있는지 확인한다.",
   },
@@ -500,7 +337,13 @@ const templates = [
 2. [지시] / [기대 결과]
 작업 상태(TestCaseWorkState): [PLANNED / IN_WORK / COMPLETED], 속성 변경(set_attribute)으로
 만들기 전에 작업 순서를 먼저 보여줘.`,
-    example: "Lab 2 프롬프트 2-1",
+    example: `TestCases/회원/비밀번호 찾기 폴더에 '비밀번호 찾기_미가입 이메일' 수동 테스트케이스를 만들어줘.
+설명(목적, 사전 조건): 가입하지 않은 이메일로 비밀번호 찾기를 요청하면 안내 문구가 나오는지 확인한다. 로그아웃 상태에서 시작한다.
+스텝 (지시 / 기대 결과):
+1. 로그인 화면에서 '비밀번호 찾기' 링크를 클릭한다 / 비밀번호 찾기 화면이 열린다
+2. 가입하지 않은 이메일을 넣고 '보내기'를 클릭한다 / '가입된 이메일이 아닙니다' 문구가 보인다
+작업 상태(TestCaseWorkState): IN_WORK, 속성 변경(set_attribute)으로
+만들기 전에 작업 순서를 먼저 보여줘.`,
     tools: "create_test_cases, list_available_tasks, execute_task (Manual XTestStep), set_attribute, save_workspace",
     caution: "원본 문서의 스텝 수와 결과의 스텝 수가 같은지, 기대 결과가 빠지지 않았는지 본다.",
   },
@@ -515,7 +358,15 @@ const templates = [
 - 검증: [어떤 화면 요소를 어떤 값으로 Verify]
 - 재사용할 값: [버퍼 이름과 대상, 없으면 없음]
 스텝별로 모듈, 속성, 값, ActionMode를 표로 보여주고, 맞는 모듈이 없는 스텝은 따로 표시해줘.`,
-    example: "Lab 3 프롬프트 3-1 → 승인 후 3-2",
+    example: `TestCases/주문/홍길동 폴더에 '장바구니 담기_자동' 자동화 테스트케이스를 만들려고 해. 아직 만들지 말고 계획만 보여줘.
+- 모듈 범위: Modules/주문 폴더와 표준 모듈(OpenUrl, CloseBrowser)에서만 찾아. 새로 스캔하지 마.
+- 시나리오:
+  1. {CP[BaseUrl]} 열기
+  2. 상품 목록에서 첫 번째 상품의 '장바구니 담기' 클릭
+  3. 상단의 장바구니 아이콘 클릭
+- 검증: 장바구니의 수량이 1인지 Verify
+- 재사용할 값: 2번에서 상품 이름을 버퍼 ProductName에 저장해, 장바구니의 상품 이름과 비교
+스텝별로 모듈, 속성, 값, ActionMode를 표로 보여주고, 맞는 모듈이 없는 스텝은 따로 표시해줘.`,
     tools: "list_assets, get_object_info, create_test_cases, set_attribute, execute_test_suite, execute_test_suite_status",
     caution: "모듈이 없는 스텝은 사람이 XScan으로 스캔해야 한다. 비밀번호 같은 값은 프롬프트에 쓰지 말고 TCP 참조 {CP[이름]}로 넣는다. 버퍼 값은 소비하는 쪽에서 {B[이름]}으로 참조된다.",
   },
@@ -587,7 +438,7 @@ const templates = [
     id: "T15", title: "Commander 메뉴 작업 실행", workflow: "execute-task", group: "관리",
     when: "오른쪽 클릭 메뉴에 있는 작업을 AI에게 대신 시킬 때",
     prompt: "[대상 경로]에서 쓸 수 있는 오른쪽 클릭 메뉴 작업 목록을 보여줘. 그중 '[작업 이름]'을 실행하려고 하는데, 필요한 입력값이 있으면 먼저 물어봐줘.",
-    example: "TestCases/MCP실습 폴더에서 쓸 수 있는 오른쪽 클릭 메뉴 작업 목록을 보여줘. 그중 'Checkout'을 실행하려고 하는데, 필요한 입력값이 있으면 먼저 물어봐줘.",
+    example: "TestCases/회원 폴더에서 쓸 수 있는 오른쪽 클릭 메뉴 작업 목록을 보여줘. 그중 'Checkout'을 실행하려고 하는데, 필요한 입력값이 있으면 먼저 물어봐줘.",
     tools: "get_object_info, list_available_tasks, execute_task",
     caution: "작업 이름은 목록에 나온 그대로(대소문자까지) 써야 한다. Scan, Rescan처럼 화면이 필요한 작업은 MCP로 하지 않는다.",
   },
@@ -595,7 +446,7 @@ const templates = [
     id: "T16", title: "저장과 체크인", workflow: "save-and-checkin", group: "관리",
     when: "작업을 마무리하고 결과를 저장하거나 공유할 때",
     prompt: "이번 대화에서 바꾸거나 체크아웃한 객체 목록을 경로와 함께 보여주고 저장해줘. (멀티 유저라면) 체크인은 체크아웃한 객체 전부에 적용되니, 내가 목록을 확인한 뒤 체크인해줘. 체크인 코멘트는 '[코멘트]'로 남겨줘.",
-    example: "Lab 5 프롬프트 5-1, 5-2",
+    example: "이번 대화에서 바꾸거나 체크아웃한 객체 목록을 경로와 함께 보여주고 저장해줘. (멀티 유저라면) 체크인은 체크아웃한 객체 전부에 적용되니, 내가 목록을 확인한 뒤 체크인해줘. 체크인 코멘트는 '주문 회귀 테스트 3건 추가'로 남겨줘.",
     tools: "save_workspace, check_in_all, update_all",
     caution: "체크인은 멀티 유저에서만 되고, 내가 체크아웃한 객체를 전부 체크인한다. create_test_cases로 만든 테스트케이스는 만들 때 이미 저장·체크인된다. 오래 편집할 때는 시작 전에 update_all로 최신 내용을 받아 두면 충돌이 줄어든다.",
   },
@@ -622,10 +473,13 @@ const references = [
   ["Tosca 2026.1 문서: Use Tosca MCP Server", "docs.tricentis.com/tosca-2026.1/en-us/content/mcp/use_mcp_server.htm"],
   ["Tosca 2026.1 LTS 클라이언트 패치 노트", "docs.tricentis.com/tosca-2026.1/en-us/content/resources/webhelp/patch_notes_testsuite.htm"],
   ["Tricentis mcp-skills (Commander MCP 스킬팩)", "github.com/Tricentis/mcp-skills/tree/main/Tosca/Commander/MCP"],
+  ["VS Code 문서: Add MCP servers", "code.visualstudio.com/docs/agent-customization/mcp-servers"],
+  ["VS Code 문서: Manage approvals and permissions", "code.visualstudio.com/docs/agents/run/approvals"],
+  ["GitHub 문서: Copilot의 MCP 사용 정책", "docs.github.com/en/copilot/how-tos/administer-copilot/manage-mcp-usage/configure-mcp-server-access"],
   ["Model Context Protocol 소개", "modelcontextprotocol.io"],
 ];
 
 module.exports = {
-  meta, agenda, terms, toolGroups, clients, practiceModules, lab3Steps, labs,
+  meta, agenda, terms, toolGroups, vscode, approvals, labs, BREAK_AFTER,
   notForAI, troubleshooting, useCases, promptElements, promptPairs, tips, preamble, templates, references,
 };
