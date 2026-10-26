@@ -238,7 +238,7 @@ const labs = [
     tools: ["create_test_cases", "list_available_tasks", "execute_task (Manual XTestStep)", "set_attribute", "save_workspace"],
     checks: [
       "작업 순서를 먼저 받고 나서 진행을 승인했다",
-      "경로가 TestCases/MCP실습/[내 이름]/로그인 실패_수동 이다",
+      "TestCases/MCP실습/[내 이름] 폴더에 '로그인 실패_수동'이 생겼다",
       "스텝 3개에 지시와 기대 결과가 모두 들어갔다",
       "Commander에서 테스트케이스를 직접 열어 확인했다",
     ],

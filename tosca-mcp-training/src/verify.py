@@ -95,7 +95,7 @@ for lab in content["labs"]:
 for t in [content["preamble"]] + content["templates"]:
     check(norm(t["prompt"]) in norm(doc_all), f"워크북에 {t['id']} 템플릿 본문이 있음")
 t06 = next(t for t in content["templates"] if t["id"] == "T06")
-check(norm(t06["prompt"]) in norm(deck_all), "슬라이드 31의 T06 본문이 워크북과 같음")
+check(norm(t06["prompt"]) in norm(deck_all), "슬라이드의 T06 본문이 워크북과 같음")
 
 # ---------- 4. 발표자 노트 ----------
 check(len(slides) == len(slide_notes) and all(len(n) > 40 for n in slide_notes), f"슬라이드 {len(slides)}장 모두 발표자 노트 있음")
@@ -105,7 +105,7 @@ emoji = re.compile("[\U0001F300-\U0001FAFF☀-⛿✀-➿⭐✅]")
 src_all = deck_all + doc_all + "".join(slide_notes)
 found_emoji = sorted(set(c for c in emoji.findall(src_all) if c != "☐"))
 check(not found_emoji, "이모지 없음 (체크박스 ☐ 제외)" + (f" {found_emoji}" if found_emoji else ""))
-check("—" not in src_all and "–" not in src_all, "줄표(—, –) 없음")
+check("—" not in src_all and " – " not in src_all, "문장 속 줄표(—, 띄운 –) 없음 (시간 범위 00:00–00:10 표기는 템플릿 형식)")
 check("!" not in src_all.replace("!=", ""), "느낌표 없음")
 banned = ["혁신", "획기적", "강력한", "손쉽게", "한눈에", "극대화", "게임 체인저", "놀라운", "완벽한", "마법", "~를 통해", "최첨단", "원활한", "시너지"]
 hits = [w for w in banned if w in src_all]
